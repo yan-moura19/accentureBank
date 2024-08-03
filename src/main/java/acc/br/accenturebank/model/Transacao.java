@@ -1,6 +1,7 @@
 package acc.br.accenturebank.model;
 
 import acc.br.accenturebank.model.enums.Operacao;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class Transacao {
 
     @ManyToOne
     @JoinColumn(name = "idConta")
+    @JsonBackReference
     private Conta conta;
 
 

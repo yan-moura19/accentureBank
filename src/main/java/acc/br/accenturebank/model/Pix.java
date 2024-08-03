@@ -1,6 +1,7 @@
 package acc.br.accenturebank.model;
 
 import acc.br.accenturebank.model.enums.TipoChavePix;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class Pix {
 
     @ManyToOne
     @JoinColumn(name = "idConta")
+    @JsonBackReference
     private Conta conta;
 
 

@@ -1,5 +1,6 @@
 package acc.br.accenturebank.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class Agencia {
     private String telefone;
 
     @OneToMany(mappedBy = "agencia")
+    @JsonManagedReference
     private List<Conta> contas;
 
 }
