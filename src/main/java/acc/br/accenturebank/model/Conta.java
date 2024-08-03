@@ -35,5 +35,5 @@ public class Conta {
     @OneToMany(mappedBy = "conta")
     private List<Transacao> transacoes;
 
-    // Getters and Setters
+
 }

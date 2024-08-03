@@ -22,5 +22,5 @@ public class Transacao {
     @JoinColumn(name = "idConta")
     private Conta conta;
 
-    // Getters and Setters
+
 }

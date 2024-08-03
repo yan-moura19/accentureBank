@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class Cliente {
     private String contato;
 
     @OneToMany(mappedBy = "cliente")
-    private List<Conta> contas;
+    private List<Conta> contas = new ArrayList<>();
 
 
 

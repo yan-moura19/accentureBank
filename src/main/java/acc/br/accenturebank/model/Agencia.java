@@ -18,5 +18,4 @@ public class Agencia {
     @OneToMany(mappedBy = "agencia")
     private List<Conta> contas;
 
-    // Getters and Setters
 }

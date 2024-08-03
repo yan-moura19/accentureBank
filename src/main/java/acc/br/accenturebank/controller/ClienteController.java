@@ -1,10 +1,16 @@
 package acc.br.accenturebank.controller;
 
+import acc.br.accenturebank.dto.ClienteDTO;
 import acc.br.accenturebank.model.Cliente;
-import acc.br.accenturebank.repository.ClienteRepository;
+
+
+import acc.br.accenturebank.model.Conta;
+import acc.br.accenturebank.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -12,31 +18,38 @@ import java.util.List;
 public class ClienteController {
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteRepository;
 
     @GetMapping
     public List<Cliente> getAllClientes() {
-        return clienteRepository.findAll();
+        return clienteRepository.getAllClientes();
     }
 
     @GetMapping("/{id}")
     public Cliente getClienteById(@PathVariable int id) {
-        return clienteRepository.findById(id).orElse(null);
+        return clienteRepository.getClienteById(id);
     }
 
     @PostMapping
-    public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteRepository.save(cliente);
+    public Cliente createCliente(@RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente = new Cliente();
+        cliente.setCpf(clienteDTO.getCpf());
+        cliente.setNome(clienteDTO.getNome());
+        cliente.setEmail(clienteDTO.getEmail());
+        cliente.setSenha(clienteDTO.getSenha());
+        cliente.setContato(clienteDTO.getContato());
+        cliente.setContas(new ArrayList<>());
+        return clienteRepository.createCliente(cliente);
     }
 
     @PutMapping("/{id}")
     public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
         cliente.setIdCliente(id);
-        return clienteRepository.save(cliente);
+        return clienteRepository.updateCliente(id,cliente);
     }
 
     @DeleteMapping("/{id}")
     public void deleteCliente(@PathVariable int id) {
-        clienteRepository.deleteById(id);
+        clienteRepository.deleteCliente(id);
     }
 }

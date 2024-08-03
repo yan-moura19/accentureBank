@@ -18,5 +18,5 @@ public class Pix {
     @JoinColumn(name = "idConta")
     private Conta conta;
 
-    // Getters and Setters
+
 }
