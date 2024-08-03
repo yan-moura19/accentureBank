@@ -22,8 +22,29 @@ public class ContaService {
 
     @Autowired
     private TransacaoRepository transacaoRepository;
+    public Conta realizarRecarga(Long idConta, String numeroCelular, float valor) {
+        Conta conta = contaRepository.findById(idConta)
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
-    public Conta realizaSaque(Long idConta, float valor){
+
+        conta.setSaldo(conta.getSaldo() - valor);
+
+
+        Transacao transacao = new Transacao();
+        transacao.setDataTransacao(LocalDate.now());
+        transacao.setOperacao(Operacao.RECARGA);
+        transacao.setDescricao("Recarga de celular para o número " + numeroCelular);
+        transacao.setValor(valor);
+        transacao.setConta(conta);
+
+
+        transacaoRepository.save(transacao);
+
+
+        return contaRepository.save(conta);
+    }
+
+    public Conta realizarSaque(Long idConta, float valor){
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
         if (conta.getSaldo() < valor) {
@@ -34,6 +55,24 @@ public class ContaService {
         transacao.setDataTransacao(LocalDate.now());
         transacao.setOperacao(Operacao.SAQUE);
         transacao.setDescricao("S/ D");
+        transacao.setValor(valor);
+        transacao.setConta(conta);
+        transacaoRepository.save(transacao);
+
+
+        return contaRepository.save(conta);
+    }
+    public Conta realizarPagamento(Long idConta, float valor){
+        Conta conta = contaRepository.findById(idConta)
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+        if (conta.getSaldo() < valor) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+        }
+        conta.setSaldo(conta.getSaldo() - valor);
+        Transacao transacao = new Transacao();
+        transacao.setDataTransacao(LocalDate.now());
+        transacao.setOperacao(Operacao.PAGAMENTO);
+        transacao.setDescricao("Pagamento feito via app");
         transacao.setValor(valor);
         transacao.setConta(conta);
         transacaoRepository.save(transacao);
