@@ -43,8 +43,13 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
-        cliente.setIdCliente(id);
+    public Cliente updateCliente(@PathVariable int id, @RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente  = getClienteById(id);
+        cliente.setCpf(clienteDTO.getCpf());
+        cliente.setNome(clienteDTO.getNome());
+        cliente.setEmail(clienteDTO.getEmail());
+        cliente.setSenha(clienteDTO.getSenha());
+        cliente.setContato(clienteDTO.getContato());
         return clienteRepository.updateCliente(id,cliente);
     }
 
