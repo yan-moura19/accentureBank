@@ -3,6 +3,7 @@ package acc.br.accenturebank.controller;
 import acc.br.accenturebank.dto.ContaDTO;
 import acc.br.accenturebank.dto.ContaDetalhesDTO;
 import acc.br.accenturebank.dto.ContaResponseDTO;
+import acc.br.accenturebank.dto.RecargaCelularRequest;
 import acc.br.accenturebank.model.Agencia;
 import acc.br.accenturebank.model.Cliente;
 import acc.br.accenturebank.model.Conta;
@@ -59,9 +60,20 @@ public class ContaController {
     }
     @PostMapping("/{id}/saque")
     public ResponseEntity<Conta> realizarSaque(@PathVariable Long id, @RequestBody float valor) {
-        Conta contaAtualizada = contaService.realizaSaque(id, valor);
+        Conta contaAtualizada = contaService.realizarSaque(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
+    @PostMapping("/{id}/pagar")
+    public ResponseEntity<Conta> realizarPagamento(@PathVariable Long id, @RequestBody float valor) {
+        Conta contaAtualizada = contaService.realizarPagamento(id, valor);
+        return ResponseEntity.ok(contaAtualizada);
+    }
+    @PostMapping("/{id}/recarga")
+    public ResponseEntity<Conta> realizarRecarga(@PathVariable Long id, @RequestBody RecargaCelularRequest recargaRequest) {
+        Conta contaAtualizada = contaService.realizarRecarga(id, recargaRequest.getNumeroCelular(), recargaRequest.getValor());
+        return ResponseEntity.ok(contaAtualizada);
+    }
+
     @PostMapping
     public ResponseEntity<Object> createConta(@RequestBody ContaDTO contaDTO, int idCliente) {
         Cliente cliente = clienteService.getClienteById(idCliente);
