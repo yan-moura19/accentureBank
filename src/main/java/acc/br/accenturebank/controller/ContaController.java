@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -53,28 +54,28 @@ public class ContaController {
         return ResponseEntity.ok(dto);
     }
     @PostMapping("/{id}/deposito")
-    public ResponseEntity<Conta> realizarDeposito(@PathVariable Long id, @RequestBody float valor) {
+    public ResponseEntity<Conta> realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarDeposito(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
     @PostMapping("/{id}/saque")
-    public ResponseEntity<Conta> realizarSaque(@PathVariable Long id, @RequestBody float valor) {
+    public ResponseEntity<Conta> realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarSaque(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
     @PostMapping("/{id}/pagar")
-    public ResponseEntity<Conta> realizarPagamento(@PathVariable Long id, @RequestBody float valor) {
+    public ResponseEntity<Conta> realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarPagamento(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
     @PostMapping("/{idConta}/separar")
-    public ResponseEntity<Conta> separarValor(@PathVariable Long idConta, @RequestParam float valor) {
+    public ResponseEntity<Conta> separarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
         Conta conta = contaService.separarValor(idConta, valor);
         return ResponseEntity.ok(conta);
     }
 
     @PostMapping("/{idConta}/resgatar")
-    public ResponseEntity<Conta> resgatarValor(@PathVariable Long idConta, @RequestParam float valor) {
+    public ResponseEntity<Conta> resgatarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
         Conta conta = contaService.resgatarValor(idConta, valor);
         return ResponseEntity.ok(conta);
     }
@@ -98,9 +99,11 @@ public class ContaController {
     @PostMapping
     public ResponseEntity<Object> createConta(@RequestBody ContaDTO contaDTO, int idCliente) {
         Cliente cliente = clienteService.getClienteById(idCliente);
+
         if (cliente == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+
         Agencia agencia = agenciaService.getAgenciaById(Integer.parseInt(contaDTO.getIdAgencia()));
         if (agencia == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -108,7 +111,7 @@ public class ContaController {
 
         Conta conta = new Conta();
         conta.setNumero(contaDTO.getNumero());
-        conta.setSaldo(0);
+        conta.setSaldo(BigDecimal.ZERO);
         conta.setAtiva(contaDTO.isAtiva());
         conta.setPixAtivo(contaDTO.isPixAtivo());
         conta.setChavePix(contaDTO.getChavePix());

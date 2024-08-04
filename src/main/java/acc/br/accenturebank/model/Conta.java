@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -15,13 +16,13 @@ public class Conta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idConta;
     private String numero;
-    private float saldo;
+    private BigDecimal saldo;
     private boolean ativa;
     private boolean pixAtivo;
     private String chavePix;
     @Enumerated(EnumType.STRING)
     private TipoConta tipoConta;
-    private float saldoSeparado;
+    private BigDecimal saldoSeparado;
 
     @ManyToOne
     @JoinColumn(name = "idAgencia")
