@@ -1,9 +1,7 @@
 package acc.br.accenturebank.controller;
 
-import acc.br.accenturebank.dto.ContaDTO;
-import acc.br.accenturebank.dto.ContaDetalhesDTO;
-import acc.br.accenturebank.dto.ContaResponseDTO;
-import acc.br.accenturebank.dto.RecargaCelularRequest;
+import acc.br.accenturebank.dto.*;
+import acc.br.accenturebank.exception.SaldoInsuficienteException;
 import acc.br.accenturebank.model.Agencia;
 import acc.br.accenturebank.model.Cliente;
 import acc.br.accenturebank.model.Conta;
@@ -12,6 +10,7 @@ import acc.br.accenturebank.model.enums.TipoConta;
 import acc.br.accenturebank.service.AgenciaService;
 import acc.br.accenturebank.service.ClienteService;
 import acc.br.accenturebank.service.ContaService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,10 +67,32 @@ public class ContaController {
         Conta contaAtualizada = contaService.realizarPagamento(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
+    @PostMapping("/{idConta}/separar")
+    public ResponseEntity<Conta> separarValor(@PathVariable Long idConta, @RequestParam float valor) {
+        Conta conta = contaService.separarValor(idConta, valor);
+        return ResponseEntity.ok(conta);
+    }
+
+    @PostMapping("/{idConta}/resgatar")
+    public ResponseEntity<Conta> resgatarValor(@PathVariable Long idConta, @RequestParam float valor) {
+        Conta conta = contaService.resgatarValor(idConta, valor);
+        return ResponseEntity.ok(conta);
+    }
     @PostMapping("/{id}/recarga")
     public ResponseEntity<Conta> realizarRecarga(@PathVariable Long id, @RequestBody RecargaCelularRequest recargaRequest) {
         Conta contaAtualizada = contaService.realizarRecarga(id, recargaRequest.getNumeroCelular(), recargaRequest.getValor());
         return ResponseEntity.ok(contaAtualizada);
+    }
+    @PostMapping("/transferencia")
+    public ResponseEntity<Void> transferir(@RequestBody TransferenciaRequest transferenciaRequest) {
+        try {
+            contaService.transferir(transferenciaRequest.getIdContaOrigem(), transferenciaRequest.getNumeroContaDestino(), transferenciaRequest.getValor());
+            return ResponseEntity.ok().build();
+        } catch (SaldoInsuficienteException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping
