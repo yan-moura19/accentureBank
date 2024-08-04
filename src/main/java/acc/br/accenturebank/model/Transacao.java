@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -17,7 +18,7 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private Operacao operacao;
     private String descricao;
-    private float valor;
+    private BigDecimal valor;
 
     @ManyToOne
     @JoinColumn(name = "idConta")

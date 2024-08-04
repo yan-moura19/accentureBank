@@ -1,5 +1,6 @@
 package acc.br.accenturebank.controller;
 
+import acc.br.accenturebank.dto.CreateTransacaoDTO;
 import acc.br.accenturebank.model.Transacao;
 import acc.br.accenturebank.service.TransacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class TransacaoController {
     }
 
     @PostMapping
-    public Transacao createTransacao(@RequestBody Transacao transacao) {
-        return transacaoService.createTransacao(transacao);
+    public Transacao createTransacao(@RequestBody CreateTransacaoDTO createTransacaoDTO) throws Exception {
+        return transacaoService.createTransacao(createTransacaoDTO);
     }
 
     @PutMapping("/{id}")

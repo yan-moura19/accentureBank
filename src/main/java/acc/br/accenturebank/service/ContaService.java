@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,16 +21,16 @@ public class ContaService {
 
     @Autowired
     private ContaRepository contaRepository;
-    public Conta separarValor(long idConta, float valor) {
+    public Conta separarValor(long idConta, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
-        if (conta.getSaldo() < valor) {
+        if (conta.getSaldo().compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente");
         }
 
-        conta.setSaldo(conta.getSaldo() - valor);
-        conta.setSaldoSeparado(conta.getSaldoSeparado() + valor);
+        conta.setSaldo(conta.getSaldo().subtract(valor));
+        conta.setSaldoSeparado(conta.getSaldoSeparado().add(valor));
         contaRepository.save(conta);
 
         Transacao transacao = new Transacao();
@@ -43,16 +44,16 @@ public class ContaService {
         return conta;
     }
 
-    public Conta resgatarValor(Long idConta, float valor) {
+    public Conta resgatarValor(Long idConta, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
-        if (conta.getSaldoSeparado() < valor) {
+        if (conta.getSaldoSeparado().compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo separado insuficiente");
         }
 
-        conta.setSaldo(conta.getSaldo() + valor);
-        conta.setSaldoSeparado(conta.getSaldoSeparado() - valor);
+        conta.setSaldo(conta.getSaldo().add(valor));
+        conta.setSaldoSeparado(conta.getSaldoSeparado().subtract(valor));
         contaRepository.save(conta);
 
         Transacao transacao = new Transacao();
@@ -71,19 +72,19 @@ public class ContaService {
 
 
     @Transactional
-    public void transferir(Long idContaOrigem, String numeroContaDestino, float valor) {
+    public void transferir(Long idContaOrigem, String numeroContaDestino, BigDecimal valor) {
         Conta contaOrigem = contaRepository.findById(idContaOrigem)
                 .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada"));
 
         Conta contaDestino = contaRepository.findByNumero(numeroContaDestino)
                 .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada"));
 
-        if (contaOrigem.getSaldo() < valor) {
+        if (contaOrigem.getSaldo().compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente para transferência");
         }
 
 
-        contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
+        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
 
         // Cria uma nova transação de débito na conta de origem
         Transacao transacaoDebito = new Transacao();
@@ -95,7 +96,7 @@ public class ContaService {
         transacaoRepository.save(transacaoDebito);
 
 
-        contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
 
 
         Transacao transacaoCredito = new Transacao();
@@ -113,12 +114,12 @@ public class ContaService {
 
     @Autowired
     private TransacaoRepository transacaoRepository;
-    public Conta realizarRecarga(Long idConta, String numeroCelular, float valor) {
+    public Conta realizarRecarga(Long idConta, String numeroCelular, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
 
-        conta.setSaldo(conta.getSaldo() - valor);
+        conta.setSaldo(conta.getSaldo().subtract(valor));
 
 
         Transacao transacao = new Transacao();
@@ -135,13 +136,13 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
-    public Conta realizarSaque(Long idConta, float valor){
+    public Conta realizarSaque(Long idConta, BigDecimal valor){
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-        if (conta.getSaldo() < valor) {
+        if (conta.getSaldo().compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente para saque");
         }
-        conta.setSaldo(conta.getSaldo() - valor);
+        conta.setSaldo(conta.getSaldo().subtract(valor));
         Transacao transacao = new Transacao();
         transacao.setDataTransacao(LocalDate.now());
         transacao.setOperacao(Operacao.SAQUE);
@@ -153,13 +154,13 @@ public class ContaService {
 
         return contaRepository.save(conta);
     }
-    public Conta realizarPagamento(Long idConta, float valor){
+    public Conta realizarPagamento(Long idConta, BigDecimal valor){
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-        if (conta.getSaldo() < valor) {
+        if (conta.getSaldo().compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente para saque");
         }
-        conta.setSaldo(conta.getSaldo() - valor);
+        conta.setSaldo(conta.getSaldo().subtract(valor));
         Transacao transacao = new Transacao();
         transacao.setDataTransacao(LocalDate.now());
         transacao.setOperacao(Operacao.PAGAMENTO);
@@ -172,13 +173,13 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
-    public Conta realizarDeposito(Long idConta, float valor) {
+    public Conta realizarDeposito(Long idConta, BigDecimal valor) {
 
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
 
-        conta.setSaldo(conta.getSaldo() + valor);
+        conta.setSaldo(conta.getSaldo().add(valor));
 
 
         Transacao transacao = new Transacao();
