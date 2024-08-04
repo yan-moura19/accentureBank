@@ -7,6 +7,7 @@ import acc.br.accenturebank.model.enums.Operacao;
 import acc.br.accenturebank.repository.ContaRepository;
 import acc.br.accenturebank.repository.TransacaoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,96 @@ public class ContaService {
 
     @Autowired
     private ContaRepository contaRepository;
+    public Conta separarValor(long idConta, float valor) {
+        Conta conta = contaRepository.findById(idConta)
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+
+        if (conta.getSaldo() < valor) {
+            throw new SaldoInsuficienteException("Saldo insuficiente");
+        }
+
+        conta.setSaldo(conta.getSaldo() - valor);
+        conta.setSaldoSeparado(conta.getSaldoSeparado() + valor);
+        contaRepository.save(conta);
+
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setDataTransacao(LocalDate.now());
+        transacao.setOperacao(Operacao.SEPARACAO);
+        transacao.setDescricao("Separação de valor");
+        transacao.setValor(valor);
+        transacaoRepository.save(transacao);
+
+        return conta;
+    }
+
+    public Conta resgatarValor(Long idConta, float valor) {
+        Conta conta = contaRepository.findById(idConta)
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+
+        if (conta.getSaldoSeparado() < valor) {
+            throw new SaldoInsuficienteException("Saldo separado insuficiente");
+        }
+
+        conta.setSaldo(conta.getSaldo() + valor);
+        conta.setSaldoSeparado(conta.getSaldoSeparado() - valor);
+        contaRepository.save(conta);
+
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setDataTransacao(LocalDate.now());
+        transacao.setOperacao(Operacao.RESGATE);
+        transacao.setDescricao("Resgate de valor separado");
+        transacao.setValor(valor);
+        transacaoRepository.save(transacao);
+
+        return conta;
+    }
+
+
+
+
+
+    @Transactional
+    public void transferir(Long idContaOrigem, String numeroContaDestino, float valor) {
+        Conta contaOrigem = contaRepository.findById(idContaOrigem)
+                .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada"));
+
+        Conta contaDestino = contaRepository.findByNumero(numeroContaDestino)
+                .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada"));
+
+        if (contaOrigem.getSaldo() < valor) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para transferência");
+        }
+
+
+        contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
+
+        // Cria uma nova transação de débito na conta de origem
+        Transacao transacaoDebito = new Transacao();
+        transacaoDebito.setDataTransacao(LocalDate.now());
+        transacaoDebito.setOperacao(Operacao.TRANSFERENCIA);
+        transacaoDebito.setDescricao("Transferência para a conta " + numeroContaDestino);
+        transacaoDebito.setValor(valor);
+        transacaoDebito.setConta(contaOrigem);
+        transacaoRepository.save(transacaoDebito);
+
+
+        contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+
+
+        Transacao transacaoCredito = new Transacao();
+        transacaoCredito.setDataTransacao(LocalDate.now());
+        transacaoCredito.setOperacao(Operacao.RECEBIMENTO_TRANSFERENCIA);
+        transacaoCredito.setDescricao("Recebimento de transferência da conta " + contaOrigem.getNumero() +" - " + contaOrigem.getCliente().getNome());
+        transacaoCredito.setValor(valor);
+        transacaoCredito.setConta(contaDestino);
+        transacaoRepository.save(transacaoCredito);
+
+
+        contaRepository.save(contaOrigem);
+        contaRepository.save(contaDestino);
+    }
 
     @Autowired
     private TransacaoRepository transacaoRepository;
