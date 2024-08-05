@@ -11,17 +11,29 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "contas", uniqueConstraints = {@UniqueConstraint(columnNames = "numero"),})
 public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idConta;
+
+    @Column(unique = true, nullable = false)
     private String numero;
+
+    @Column(nullable = false)
     private BigDecimal saldo;
-    private boolean ativa;
-    private boolean pixAtivo;
-    private String chavePix;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean ativa = true;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean pixAtivo = false;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoConta tipoConta;
+
+    @Column(nullable = false)
     private BigDecimal saldoSeparado;
 
     @ManyToOne

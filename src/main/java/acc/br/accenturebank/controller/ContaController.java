@@ -37,7 +37,7 @@ public class ContaController {
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<ContaDetalhesDTO> getContaById(@PathVariable Long id) {
+    public ResponseEntity<ContaDetalhesDTO> getContaById(@PathVariable Long id) {
         Conta conta = contaService.getContaById(id);
         ContaDetalhesDTO dto = new ContaDetalhesDTO();
         dto.setIdConta(conta.getIdConta());
@@ -45,7 +45,6 @@ public class ContaController {
         dto.setSaldo(conta.getSaldo());
         dto.setAtiva(conta.isAtiva());
         dto.setPixAtivo(conta.isPixAtivo());
-        dto.setChavePix(conta.getChavePix());
         dto.setTipoConta(conta.getTipoConta());
         dto.setNomeCliente(conta.getCliente().getNome());
         dto.setNomeAgencia(conta.getAgencia().getNomeAgencia());
@@ -53,21 +52,25 @@ public class ContaController {
         dto.setTelefoneAgencia(conta.getAgencia().getTelefone());
         return ResponseEntity.ok(dto);
     }
+
     @PostMapping("/{id}/deposito")
     public ResponseEntity<Conta> realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarDeposito(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
+
     @PostMapping("/{id}/saque")
     public ResponseEntity<Conta> realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarSaque(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
+
     @PostMapping("/{id}/pagar")
     public ResponseEntity<Conta> realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta contaAtualizada = contaService.realizarPagamento(id, valor);
         return ResponseEntity.ok(contaAtualizada);
     }
+
     @PostMapping("/{idConta}/separar")
     public ResponseEntity<Conta> separarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
         Conta conta = contaService.separarValor(idConta, valor);
@@ -79,11 +82,13 @@ public class ContaController {
         Conta conta = contaService.resgatarValor(idConta, valor);
         return ResponseEntity.ok(conta);
     }
+
     @PostMapping("/{id}/recarga")
     public ResponseEntity<Conta> realizarRecarga(@PathVariable Long id, @RequestBody RecargaCelularRequest recargaRequest) {
         Conta contaAtualizada = contaService.realizarRecarga(id, recargaRequest.getNumeroCelular(), recargaRequest.getValor());
         return ResponseEntity.ok(contaAtualizada);
     }
+
     @PostMapping("/transferencia")
     public ResponseEntity<Void> transferir(@RequestBody TransferenciaRequest transferenciaRequest) {
         try {
@@ -114,7 +119,7 @@ public class ContaController {
         conta.setSaldo(BigDecimal.ZERO);
         conta.setAtiva(contaDTO.isAtiva());
         conta.setPixAtivo(contaDTO.isPixAtivo());
-        conta.setChavePix(contaDTO.getChavePix());
+
         conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
         conta.setCliente(cliente);
         conta.setAgencia(agencia);
@@ -127,7 +132,7 @@ public class ContaController {
         responseDTO.setSaldo(savedConta.getSaldo());
         responseDTO.setAtiva(savedConta.isAtiva());
         responseDTO.setPixAtivo(savedConta.isPixAtivo());
-        responseDTO.setChavePix(savedConta.getChavePix());
+
         responseDTO.setTipoConta(savedConta.getTipoConta());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -139,7 +144,7 @@ public class ContaController {
         conta.setNumero(contaDTO.getNumero());
         conta.setAtiva(contaDTO.isAtiva());
         conta.setPixAtivo(contaDTO.isPixAtivo());
-        conta.setChavePix(contaDTO.getChavePix());
+
         conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
 
         return contaService.updateConta(id, conta);

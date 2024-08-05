@@ -24,7 +24,7 @@ public class AgenciaController {
     }
 
     @PutMapping("/{id}")
-    public Agencia updateAgencia(@PathVariable int id, @Valid @RequestBody UpdateAgenciaDTO agenciaDTO) throws Exception{
+    public Agencia updateAgencia(@PathVariable int id, @Valid @RequestBody UpdateAgenciaDTO agenciaDTO) {
         return agenciaService.updateAgencia(id, agenciaDTO);
     }
 

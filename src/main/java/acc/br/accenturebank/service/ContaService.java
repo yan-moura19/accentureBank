@@ -21,6 +21,7 @@ public class ContaService {
 
     @Autowired
     private ContaRepository contaRepository;
+
     public Conta separarValor(long idConta, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
@@ -68,9 +69,6 @@ public class ContaService {
     }
 
 
-
-
-
     @Transactional
     public void transferir(Long idContaOrigem, String numeroContaDestino, BigDecimal valor) {
         Conta contaOrigem = contaRepository.findById(idContaOrigem)
@@ -102,7 +100,7 @@ public class ContaService {
         Transacao transacaoCredito = new Transacao();
         transacaoCredito.setDataTransacao(LocalDate.now());
         transacaoCredito.setOperacao(Operacao.RECEBIMENTO_TRANSFERENCIA);
-        transacaoCredito.setDescricao("Recebimento de transferência da conta " + contaOrigem.getNumero() +" - " + contaOrigem.getCliente().getNome());
+        transacaoCredito.setDescricao("Recebimento de transferência da conta " + contaOrigem.getNumero() + " - " + contaOrigem.getCliente().getNome());
         transacaoCredito.setValor(valor);
         transacaoCredito.setConta(contaDestino);
         transacaoRepository.save(transacaoCredito);
@@ -114,6 +112,7 @@ public class ContaService {
 
     @Autowired
     private TransacaoRepository transacaoRepository;
+
     public Conta realizarRecarga(Long idConta, String numeroCelular, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
@@ -136,7 +135,7 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
-    public Conta realizarSaque(Long idConta, BigDecimal valor){
+    public Conta realizarSaque(Long idConta, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
         if (conta.getSaldo().compareTo(valor) < 0) {
@@ -154,7 +153,8 @@ public class ContaService {
 
         return contaRepository.save(conta);
     }
-    public Conta realizarPagamento(Long idConta, BigDecimal valor){
+
+    public Conta realizarPagamento(Long idConta, BigDecimal valor) {
         Conta conta = contaRepository.findById(idConta)
                 .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
         if (conta.getSaldo().compareTo(valor) < 0) {

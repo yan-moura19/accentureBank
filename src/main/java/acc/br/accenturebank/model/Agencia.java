@@ -8,12 +8,19 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "agencias")
 public class Agencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idAgencia;
+
+    @Column(nullable = false)
     private String nomeAgencia;
+
+    @Column(nullable = false)
     private String endereco;
+
+    @Column(nullable = false)
     private String telefone;
 
     @OneToMany(mappedBy = "agencia")

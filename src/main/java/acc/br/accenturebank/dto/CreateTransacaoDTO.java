@@ -16,7 +16,7 @@ public class CreateTransacaoDTO {
 
     @NotNull()
     @Pattern(regexp = "TRANSFERENCIA|SAQUE|DEPOSITO|RECARGA|PAGAMENTO|RECEBIMENTO_TRANSFERENCIA|SEPARACAO|RESGATE",
-    message = "A Operação deve ser um dos tipos: TRANSFERENCIA,SAQUE,DEPOSITO,RECARGA,PAGAMENTO,RECEBIMENTO_TRANSFERENCIA,SEPARACAO,RESGATE.")
+            message = "A Operação deve ser um dos tipos: TRANSFERENCIA,SAQUE,DEPOSITO,RECARGA,PAGAMENTO,RECEBIMENTO_TRANSFERENCIA,SEPARACAO,RESGATE.")
     private Operacao operacao;
 
     @NotBlank(message = "Descrição não pode ser vazia.")
