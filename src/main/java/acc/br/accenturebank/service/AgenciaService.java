@@ -19,57 +19,68 @@ public class AgenciaService {
     private AgenciaRepository agenciaRepository;
 
     public Agencia createAgencia(CreateAgenciaDTO agenciaDTO) {
+        try {
+            List<Conta> contas = new ArrayList<>();
 
-        List<Conta> contas = new ArrayList<>();
+            Agencia agencia = new Agencia();
 
-        Agencia agencia = new Agencia();
+            agencia.setNomeAgencia(agenciaDTO.getNomeAgencia());
+            agencia.setEndereco(agenciaDTO.getEndereco());
+            agencia.setTelefone(agenciaDTO.getTelefone());
+            agencia.setContas(contas);
 
-        agencia.setNomeAgencia(agenciaDTO.getNomeAgencia());
-        agencia.setEndereco(agenciaDTO.getEndereco());
-        agencia.setTelefone(agenciaDTO.getTelefone());
-        agencia.setContas(contas);
+            return agenciaRepository.save(agencia);
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao criar a agência: ".concat(e.getMessage()), e);
+        }
 
-        return agenciaRepository.save(agencia);
     }
 
 
-    public Agencia updateAgencia(int id, UpdateAgenciaDTO agenciaDTO) throws Exception {
+    public Agencia updateAgencia(int id, UpdateAgenciaDTO agenciaDTO) {
+        try {
+            Agencia agencia = this.getAgenciaById(id);
 
-        Agencia agencia = agenciaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Agência com id %d não encontrada.".formatted(id)));
+            String novoNomeAgencia = agenciaDTO.getNomeAgencia();
+            String novoEndereco = agenciaDTO.getEndereco();
+            String novoTelefone = agenciaDTO.getTelefone();
 
-        String novoNomeAgencia = agenciaDTO.getNomeAgencia();
-        String novoEndereco = agenciaDTO.getEndereco();
-        String novoTelefone = agenciaDTO.getTelefone();
+            if (novoNomeAgencia != null) {
+                agencia.setNomeAgencia(novoNomeAgencia);
+            }
 
-        if(novoNomeAgencia != null){
-            agencia.setNomeAgencia(novoNomeAgencia);
+            if (novoEndereco != null) {
+                agencia.setEndereco(novoEndereco);
+            }
+
+            if (novoTelefone != null) {
+                agencia.setTelefone(novoTelefone);
+            }
+
+            return agenciaRepository.save(agencia);
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao atualizar a agência: ".concat(e.getMessage()), e);
         }
 
-        if(novoEndereco != null){
-            agencia.setEndereco(novoEndereco);
-        }
-
-        if(novoTelefone != null){
-            agencia.setTelefone(novoTelefone);
-        }
-
-        return agenciaRepository.save(agencia);
     }
 
-    public Agencia getAgenciaById(int id) throws ResourceNotFoundException{
+    public Agencia getAgenciaById(int id) throws ResourceNotFoundException {
         return agenciaRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Agência com id %d não encontrada.".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Agência com id %d não encontrada.".formatted(id)));
     }
 
     public List<Agencia> getAllAgencias() {
         return agenciaRepository.findAll();
     }
 
-    public void deleteAgencia(int id) throws ResourceNotFoundException{
-        //verificar se agencia existe
-        this.getAgenciaById(id);
+    public void deleteAgencia(int id) throws ResourceNotFoundException {
+        try {
+            //verificar se agencia existe
+            this.getAgenciaById(id);
 
-        agenciaRepository.deleteById(id);
+            agenciaRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao deletar a agência: ".concat(e.getMessage()), e);
+        }
     }
 }

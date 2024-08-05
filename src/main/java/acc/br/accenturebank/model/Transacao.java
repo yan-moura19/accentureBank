@@ -14,10 +14,18 @@ public class Transacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idTransacao;
+
+    @Column(nullable = false)
     private LocalDate dataTransacao;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Operacao operacao;
+
+    @Column(nullable = false)
     private String descricao;
+
+    @Column(nullable = false)
     private BigDecimal valor;
 
     @ManyToOne

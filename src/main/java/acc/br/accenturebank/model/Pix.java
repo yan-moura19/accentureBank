@@ -7,12 +7,19 @@ import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "pixs", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "chave"),
+})
 public class Pix {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoChavePix tipo;
+
+    @Column(unique = true, nullable = false)
     private String chave;
 
     @ManyToOne

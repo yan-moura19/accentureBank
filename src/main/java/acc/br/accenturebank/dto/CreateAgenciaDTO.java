@@ -21,8 +21,8 @@ public class CreateAgenciaDTO {
     private String endereco;
 
     @NotBlank(message = "O telefone não pode ser vazio .")
-    @Pattern(regexp = "^(\\d{2})?\\(\\d{2}\\)\\d{4,5}-\\d{4}$",
-            message = "O telefone deve ser no formato +55(83)3341-2007 ou (83)3341-2007")
+    @Pattern(regexp = "^(\\+\\d{2})?\\(\\d{2}\\)\\d{4,5}-\\d{4}$",
+            message = "O telefone deve ser no formato +55(83)3341-2007 ou (83)91232-2007")
     private String telefone;
 }
 

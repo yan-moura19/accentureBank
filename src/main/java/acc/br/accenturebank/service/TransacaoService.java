@@ -27,12 +27,12 @@ public class TransacaoService {
         return transacaoRepository.findById(id).orElse(null);
     }
 
-    public Transacao createTransacao(CreateTransacaoDTO createTransacaoDTO) throws Exception  {
+    public Transacao createTransacao(CreateTransacaoDTO createTransacaoDTO) throws Exception {
 
         long idConta = createTransacaoDTO.getIdConta();
         Conta conta = contaService.getContaById(idConta);
 
-        if (conta == null){
+        if (conta == null) {
             throw new ContaNaoExisteException(
                     "Conta com ID %d não foi encontrada".formatted(idConta)
             );
