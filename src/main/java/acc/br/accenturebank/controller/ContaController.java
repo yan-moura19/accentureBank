@@ -119,6 +119,7 @@ public class ContaController {
         conta.setSaldo(BigDecimal.ZERO);
         conta.setAtiva(contaDTO.isAtiva());
         conta.setPixAtivo(contaDTO.isPixAtivo());
+        conta.setSaldoSeparado(BigDecimal.ZERO);
 
         conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
         conta.setCliente(cliente);

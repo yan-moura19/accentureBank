@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,18 @@ public class Cliente {
 
     @Column(nullable = false)
     private String telefone;
+
+    @Column(nullable = false)
+    private String cep;
+
+    @Column(nullable = false)
+    private String numeroEndereco;
+
+    @Column(nullable = false)
+    private String complemento;
+
+
+    private LocalDate dataNascimento;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "cliente")

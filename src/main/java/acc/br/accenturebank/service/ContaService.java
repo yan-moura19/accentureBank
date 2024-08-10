@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,7 +37,7 @@ public class ContaService {
 
         Transacao transacao = new Transacao();
         transacao.setConta(conta);
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.SEPARACAO);
         transacao.setDescricao("Separação de valor");
         transacao.setValor(valor);
@@ -59,7 +60,7 @@ public class ContaService {
 
         Transacao transacao = new Transacao();
         transacao.setConta(conta);
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.RESGATE);
         transacao.setDescricao("Resgate de valor separado");
         transacao.setValor(valor);
@@ -84,9 +85,9 @@ public class ContaService {
 
         contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
 
-        // Cria uma nova transação de débito na conta de origem
+
         Transacao transacaoDebito = new Transacao();
-        transacaoDebito.setDataTransacao(LocalDate.now());
+        transacaoDebito.setDataTransacao(LocalDateTime.now());
         transacaoDebito.setOperacao(Operacao.TRANSFERENCIA);
         transacaoDebito.setDescricao("Transferência para a conta " + numeroContaDestino);
         transacaoDebito.setValor(valor);
@@ -98,7 +99,7 @@ public class ContaService {
 
 
         Transacao transacaoCredito = new Transacao();
-        transacaoCredito.setDataTransacao(LocalDate.now());
+        transacaoCredito.setDataTransacao(LocalDateTime.now());
         transacaoCredito.setOperacao(Operacao.RECEBIMENTO_TRANSFERENCIA);
         transacaoCredito.setDescricao("Recebimento de transferência da conta " + contaOrigem.getNumero() + " - " + contaOrigem.getCliente().getNome());
         transacaoCredito.setValor(valor);
@@ -122,7 +123,7 @@ public class ContaService {
 
 
         Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.RECARGA);
         transacao.setDescricao("Recarga de celular para o número " + numeroCelular);
         transacao.setValor(valor);
@@ -143,7 +144,7 @@ public class ContaService {
         }
         conta.setSaldo(conta.getSaldo().subtract(valor));
         Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.SAQUE);
         transacao.setDescricao("S/ D");
         transacao.setValor(valor);
@@ -162,7 +163,7 @@ public class ContaService {
         }
         conta.setSaldo(conta.getSaldo().subtract(valor));
         Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.PAGAMENTO);
         transacao.setDescricao("Pagamento feito via app");
         transacao.setValor(valor);
@@ -183,7 +184,7 @@ public class ContaService {
 
 
         Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDate.now());
+        transacao.setDataTransacao(LocalDateTime.now());
         transacao.setOperacao(Operacao.DEPOSITO);
         transacao.setDescricao("S/ D");
         transacao.setValor(valor);

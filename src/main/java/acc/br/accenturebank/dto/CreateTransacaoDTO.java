@@ -6,13 +6,14 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 //DTO de Criação de Transação
 @Data
 public class CreateTransacaoDTO {
 
     @NotNull(message = "A Data da Transação não pode ser nula.")
-    private LocalDate dataTransacao;
+    private LocalDateTime dataTransacao;
 
     @NotNull()
     @Pattern(regexp = "TRANSFERENCIA|SAQUE|DEPOSITO|RECARGA|PAGAMENTO|RECEBIMENTO_TRANSFERENCIA|SEPARACAO|RESGATE",

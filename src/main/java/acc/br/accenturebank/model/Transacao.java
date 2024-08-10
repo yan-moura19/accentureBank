@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -16,7 +17,7 @@ public class Transacao {
     private int idTransacao;
 
     @Column(nullable = false)
-    private LocalDate dataTransacao;
+    private LocalDateTime dataTransacao;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class CreateClienteDTO {
 
@@ -19,6 +21,18 @@ public class CreateClienteDTO {
     @NotBlank(message = "O email não pode ser vazio.")
     @Email(message = "O email deve ser um email válido.")
     private String email;
+
+    @NotBlank(message = "O cep não pode ser vazio.")
+    private String cep;
+
+    @NotBlank(message = "O cep não pode ser vazio.")
+    private String numeroEndereco;
+
+    @NotBlank(message = "O complemento não pode ser vazio.")
+    private String complemento;
+
+
+    private LocalDate dataNascimento;
 
     @NotBlank(message = "A senha não pode ser vazia.")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "A senha teve contém pelo menos 8 caracteres, sendo pelo menos:" + "1 letra maiúscula" + "1 número" + "1 caractere especial: @, & , $ , % , * , ! , ?")

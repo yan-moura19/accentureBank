@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteService {
@@ -18,6 +19,19 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    public Optional<Cliente> login(String login, String senha) {
+        Optional<Cliente> cliente = clienteRepository.findByCpf(login);
+
+        if (cliente.isEmpty()) {
+            cliente = clienteRepository.findByEmail(login);
+        }
+
+        if (cliente.isPresent() && cliente.get().getSenha().equals(senha)) {
+            return cliente;
+        }
+
+        return Optional.empty();
+    }
 
     public Cliente createCliente(CreateClienteDTO createClienteDTO) {
 
@@ -31,6 +45,10 @@ public class ClienteService {
             cliente.setEmail(createClienteDTO.getEmail());
             cliente.setSenha(createClienteDTO.getSenha());
             cliente.setTelefone(createClienteDTO.getTelefone());
+            cliente.setCep(createClienteDTO.getCep());
+            cliente.setNumeroEndereco(createClienteDTO.getNumeroEndereco());
+            cliente.setComplemento(createClienteDTO.getComplemento());
+            cliente.setDataNascimento(createClienteDTO.getDataNascimento());
             cliente.setContas(contas);
 
             return clienteRepository.save(cliente);
