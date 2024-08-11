@@ -16,11 +16,11 @@ public class CreateContaDTO {
     private TipoConta tipoConta;
 
     @NotNull(message = "A Agência não pode ser nula.")
-    @Digits(integer = 10, fraction = 0, message = "O ID da conta deve ser um número inteiro com até 10 digitos")
-    @Min(value = 0, message = "O ID da conta deve ser um número inteiro não negativo.")
+    @Digits(integer = 10, fraction = 0, message = "O ID da Agência deve ser um número inteiro com até 10 digitos")
+    @Min(value = 0, message = "O ID da Agência deve ser um número inteiro não negativo.")
     private int idAgencia;
 
-    @NotNull(message = "O Cleinte não pode ser nulo.")
+    @NotNull(message = "O Cliente não pode ser nulo.")
     @Digits(integer = 10, fraction = 0, message = "O ID do Cliente deve ser um número inteiro com até 10 digitos")
     @Min(value = 0, message = "O ID do Cliente deve ser um número inteiro não negativo.")
     private int idCliente;

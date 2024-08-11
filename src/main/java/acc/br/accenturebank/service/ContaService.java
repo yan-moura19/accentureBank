@@ -1,8 +1,6 @@
 package acc.br.accenturebank.service;
 
-import acc.br.accenturebank.dto.CreateContaDTO;
-import acc.br.accenturebank.dto.CreateTransacaoDTO;
-import acc.br.accenturebank.dto.UpdateContaDTO;
+import acc.br.accenturebank.dto.*;
 import acc.br.accenturebank.exception.SaldoInsuficienteException;
 import acc.br.accenturebank.model.Agencia;
 import acc.br.accenturebank.model.Cliente;
@@ -19,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import java.util.Random;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,10 +57,13 @@ public class ContaService {
                 throw new ResourceNotFoundException("Agência com id %d não foi encontrada.".formatted(idAgencia));
             }
 
+            String numero = gerarNumeroContaUnico();
+
             Conta conta = Conta.builder()
                     .tipoConta(createContaDTO.getTipoConta())
                     .agencia(agencia)
                     .cliente(cliente)
+                    .numero(numero)
                     .build();
 
             return contaRepository.save(conta);
@@ -83,7 +84,6 @@ public class ContaService {
 
        try{
            Conta conta = this.getContaById(id);
-
            TipoConta novoTipoConta = updateContaDTO.getTipoConta();
            int novoIdAgencia = updateContaDTO.getIdAgencia();
            int novoIdCliente = updateContaDTO.getIdCliente();
@@ -141,6 +141,11 @@ public class ContaService {
         }
     }
 
+    private Conta getContaByNumero(String numero) {
+        return contaRepository.findByNumero(numero)
+                .orElseThrow(() -> new EntityNotFoundException("Conta de numero %s não foi encontrada.".formatted(numero)));
+    }
+
     @Transactional
     public Conta separarValor(long id, BigDecimal valor) {
 
@@ -164,7 +169,7 @@ public class ContaService {
         transacaoService.createTransacao(new CreateTransacaoDTO(
                 LocalDateTime.now(),
                 Operacao.SEPARACAO,
-                "Separação de valor",
+                "Separação de valor - R$ " + valor,
                 valor,
                 conta.getIdConta()
         ));
@@ -197,7 +202,7 @@ public class ContaService {
         transacaoService.createTransacao(new CreateTransacaoDTO(
                 LocalDateTime.now(),
                 Operacao.RESGATE,
-                "Resgate de SaldoSeparado",
+                "Resgate de SaldoSeparado - R$ " + valor,
                 valor,
                 conta.getIdConta()
         ));
@@ -206,130 +211,167 @@ public class ContaService {
     }
 
     @Transactional
-    public void transferir(Long idContaOrigem, long idContaDestino, BigDecimal valor) {
-        Conta contaOrigem = contaRepository.findById(idConta)
-                .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada"));
+    public Conta transferir(TransferenciaDTO transferenciaDTO) {
 
-        Conta contaDestino = contaRepository.findByNumero(numeroContaDestino)
-                .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada"));
+        long idContaOrigem = transferenciaDTO.getIdContaOrigem();
+        String numeroContaDestino = transferenciaDTO.getNumeroContaDestino();
+        BigDecimal valor = transferenciaDTO.getValor();
 
-        if (contaOrigem.getSaldo().compareTo(valor) < 0) {
+
+        Conta contaOrigem = this.getContaById(idContaOrigem);
+
+        Conta contaDestino = this.getContaByNumero(numeroContaDestino);
+
+        BigDecimal saldoOrigem = contaOrigem.getSaldo();
+
+        if (saldoOrigem.compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente para transferência");
         }
 
 
-        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
+        contaOrigem.setSaldo(saldoOrigem.subtract(valor));
 
 
-        Transacao transacaoDebito = new Transacao();
-        transacaoDebito.setDataTransacao(LocalDateTime.now());
-        transacaoDebito.setOperacao(Operacao.TRANSFERENCIA);
-        transacaoDebito.setDescricao("Transferência para a conta " + numeroContaDestino);
-        transacaoDebito.setValor(valor);
-        transacaoDebito.setConta(contaOrigem);
-        transacaoRepository.save(transacaoDebito);
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.TRANSFERENCIA,
+                "Transferência para a conta " + numeroContaDestino + " no valor de R$ " + valor,
+                valor,
+                contaOrigem.getIdConta()
+        ));
 
 
-        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
+        BigDecimal saldoDestino = contaDestino.getSaldo();
 
+        contaDestino.setSaldo(saldoDestino.add(valor));
 
-        Transacao transacaoCredito = new Transacao();
-        transacaoCredito.setDataTransacao(LocalDateTime.now());
-        transacaoCredito.setOperacao(Operacao.RECEBIMENTO_TRANSFERENCIA);
-        transacaoCredito.setDescricao("Recebimento de transferência da conta " + contaOrigem.getNumero() + " - " + contaOrigem.getCliente().getNome());
-        transacaoCredito.setValor(valor);
-        transacaoCredito.setConta(contaDestino);
-        transacaoRepository.save(transacaoCredito);
-
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.TRANSFERENCIA,
+                "Recebimento de transferência da conta " + contaOrigem.getNumero() + " no valor de R$ " + valor ,
+                valor,
+                contaDestino.getIdConta()
+        ));
 
         contaRepository.save(contaOrigem);
         contaRepository.save(contaDestino);
+
+        return contaOrigem;
     }
 
-    @Autowired
-    private TransacaoRepository transacaoRepository;
-
-    public Conta realizarRecarga(Long idConta, String numeroCelular, BigDecimal valor) {
-        Conta conta = contaRepository.findById(idConta)
-                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+    @Transactional
+    public Conta realizarRecarga(long id, RecargaDTO recargaDTO) {
 
 
-        conta.setSaldo(conta.getSaldo().subtract(valor));
+        String numeroCelular = recargaDTO.getNumeroCelular();
+        BigDecimal valor = recargaDTO.getValor();
 
+        Conta conta = this.getContaById(id);
 
-        Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDateTime.now());
-        transacao.setOperacao(Operacao.RECARGA);
-        transacao.setDescricao("Recarga de celular para o número " + numeroCelular);
-        transacao.setValor(valor);
-        transacao.setConta(conta);
+        BigDecimal saldo = conta.getSaldo();
 
-
-        transacaoRepository.save(transacao);
-
-
-        return contaRepository.save(conta);
-    }
-
-    public Conta realizarSaque(Long idConta, BigDecimal valor) {
-        Conta conta = contaRepository.findById(idConta)
-                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-        if (conta.getSaldo().compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+        if (saldo.compareTo(valor) < 0) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para recarga");
         }
-        conta.setSaldo(conta.getSaldo().subtract(valor));
-        Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDateTime.now());
-        transacao.setOperacao(Operacao.SAQUE);
-        transacao.setDescricao("S/ D");
-        transacao.setValor(valor);
-        transacao.setConta(conta);
-        transacaoRepository.save(transacao);
 
+        conta.setSaldo(saldo.subtract(valor));
+
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.RECARGA,
+                "Recarga de celular para o número " + numeroCelular + " no valor R$ " + valor,
+                valor,
+                conta.getIdConta()
+        ));
 
         return contaRepository.save(conta);
     }
 
-    public Conta realizarPagamento(Long idConta, BigDecimal valor) {
-        Conta conta = contaRepository.findById(idConta)
-                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-        if (conta.getSaldo().compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+    @Transactional
+    public Conta realizarDeposito(Long id, BigDecimal valor) {
+
+        if (valor.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("O valor não pode ser negativo.");
         }
-        conta.setSaldo(conta.getSaldo().subtract(valor));
-        Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDateTime.now());
-        transacao.setOperacao(Operacao.PAGAMENTO);
-        transacao.setDescricao("Pagamento feito via app");
-        transacao.setValor(valor);
-        transacao.setConta(conta);
-        transacaoRepository.save(transacao);
 
-
-        return contaRepository.save(conta);
-    }
-
-    public Conta realizarDeposito(Long idConta, BigDecimal valor) {
-
-        Conta conta = contaRepository.findById(idConta)
-                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-
+        Conta conta = this.getContaById(id);
 
         conta.setSaldo(conta.getSaldo().add(valor));
 
-
-        Transacao transacao = new Transacao();
-        transacao.setDataTransacao(LocalDateTime.now());
-        transacao.setOperacao(Operacao.DEPOSITO);
-        transacao.setDescricao("S/ D");
-        transacao.setValor(valor);
-        transacao.setConta(conta);
-
-
-        transacaoRepository.save(transacao);
-
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.DEPOSITO,
+                "Deposito no valor R$ " + valor,
+                valor,
+                conta.getIdConta()
+        ));
 
         return contaRepository.save(conta);
+    }
+
+    @Transactional
+    public Conta realizarSaque(Long id, BigDecimal valor) {
+
+        if (valor.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("O valor não pode ser negativo.");
+        }
+
+        Conta conta = this.getContaById(id);
+        BigDecimal saldo = conta.getSaldo();
+
+        if (saldo.compareTo(valor) < 0) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+        }
+
+        conta.setSaldo(saldo.subtract(valor));
+
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.SAQUE,
+                "Saque no valor R$ " + valor,
+                valor,
+                conta.getIdConta()
+        ));
+
+        return contaRepository.save(conta);
+    }
+
+    @Transactional
+    public Conta realizarPagamento(Long id, BigDecimal valor) {
+
+        if (valor.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("O valor não pode ser negativo.");
+        }
+
+        Conta conta = this.getContaById(id);
+        BigDecimal saldo = conta.getSaldo();
+
+        if (saldo.compareTo(valor) < 0) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+        }
+
+        conta.setSaldo(saldo.subtract(valor));
+
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.PAGAMENTO,
+                "Pagamento no valor R$ " + valor,
+                valor,
+                conta.getIdConta()
+        ));
+
+        return contaRepository.save(conta);
+    }
+
+
+
+    private String gerarNumeroContaUnico() {
+        String numeroConta;
+        do {
+            numeroConta = String.format("%08d", new Random().nextInt(100000000));
+        } while (contaRepository.existsByNumero(numeroConta));
+
+        return numeroConta;
     }
 
 }

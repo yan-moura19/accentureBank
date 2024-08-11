@@ -1,16 +1,8 @@
 package acc.br.accenturebank.controller;
 
 import acc.br.accenturebank.dto.*;
-import acc.br.accenturebank.exception.SaldoInsuficienteException;
-import acc.br.accenturebank.model.Agencia;
-import acc.br.accenturebank.model.Cliente;
 import acc.br.accenturebank.model.Conta;
-
-import acc.br.accenturebank.model.enums.TipoConta;
-import acc.br.accenturebank.service.AgenciaService;
-import acc.br.accenturebank.service.ClienteService;
 import acc.br.accenturebank.service.ContaService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +17,6 @@ public class ContaController {
 
     @Autowired
     private ContaService contaService;
-
-
-
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -70,49 +59,49 @@ public class ContaController {
         return new ContaResponseDTO(conta);
     }
 
-    @PostMapping("/{id}/deposito")
-    public ResponseEntity<Conta> realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta contaAtualizada = contaService.realizarDeposito(id, valor);
-        return ResponseEntity.ok(contaAtualizada);
-    }
-
-    @PostMapping("/{id}/saque")
-    public ResponseEntity<Conta> realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta contaAtualizada = contaService.realizarSaque(id, valor);
-        return ResponseEntity.ok(contaAtualizada);
-    }
-
-    @PostMapping("/{id}/pagar")
-    public ResponseEntity<Conta> realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta contaAtualizada = contaService.realizarPagamento(id, valor);
-        return ResponseEntity.ok(contaAtualizada);
-    }
-
-
-
     @PostMapping("/{idConta}/resgatar")
-    public ResponseEntity<Conta> resgatarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
-        Conta conta = contaService.resgatarValor(idConta, valor);
-        return ResponseEntity.ok(conta);
-    }
-
-    @PostMapping("/{id}/recarga")
-    public ResponseEntity<Conta> realizarRecarga(@PathVariable Long id, @RequestBody RecargaCelularRequest recargaRequest) {
-        Conta contaAtualizada = contaService.realizarRecarga(id, recargaRequest.getNumeroCelular(), recargaRequest.getValor());
-        return ResponseEntity.ok(contaAtualizada);
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO resgatarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
+        Conta conta = contaService.resgatarSaldoSeparado(idConta, valor);
+        return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/transferencia")
-    public ResponseEntity<Void> transferir(@RequestBody TransferenciaRequest transferenciaRequest) {
-        try {
-            contaService.transferir(transferenciaRequest.getIdContaOrigem(), transferenciaRequest.getNumeroContaDestino(), transferenciaRequest.getValor());
-            return ResponseEntity.ok().build();
-        } catch (SaldoInsuficienteException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO transferir(@RequestBody TransferenciaDTO transferenciaDTO) {
+        Conta conta = contaService.transferir(transferenciaDTO);
+        return new ContaResponseDTO(conta);
     }
+
+    @PostMapping("/{id}/recarga")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO realizarRecarga(@PathVariable Long id, @RequestBody RecargaDTO recargaDTO) {
+        Conta conta = contaService.realizarRecarga(id, recargaDTO);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PostMapping("/{id}/deposito")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
+        Conta conta = contaService.realizarDeposito(id, valor);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PostMapping("/{id}/saque")
+    public ContaResponseDTO realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
+        Conta conta = contaService.realizarSaque(id, valor);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PostMapping("/{id}/pagar")
+    public ContaResponseDTO realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
+        Conta conta = contaService.realizarPagamento(id, valor);
+        return new ContaResponseDTO(conta);
+    }
+
+
+
+
 
 
 
