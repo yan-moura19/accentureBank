@@ -115,10 +115,10 @@ public class ContaController {
         }
 
         Conta conta = new Conta();
-        conta.setNumero(contaDTO.getNumero());
+
         conta.setSaldo(BigDecimal.ZERO);
-        conta.setAtiva(contaDTO.isAtiva());
-        conta.setPixAtivo(contaDTO.isPixAtivo());
+        conta.setAtiva(true);
+        conta.setPixAtivo(true);
         conta.setSaldoSeparado(BigDecimal.ZERO);
 
         conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
@@ -142,10 +142,8 @@ public class ContaController {
     @PutMapping("/{id}")
     public Conta updateConta(@PathVariable int id, @RequestBody ContaDTO contaDTO) {
         Conta conta = contaService.getContaById((long) id);
-        conta.setNumero(contaDTO.getNumero());
-        conta.setAtiva(contaDTO.isAtiva());
-        conta.setPixAtivo(contaDTO.isPixAtivo());
-
+        conta.setAtiva(true);
+        conta.setPixAtivo(true);
         conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
 
         return contaService.updateConta(id, conta);

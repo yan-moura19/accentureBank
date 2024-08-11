@@ -8,7 +8,6 @@ import acc.br.accenturebank.repository.ContaRepository;
 import acc.br.accenturebank.repository.TransacaoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class ContaService {
@@ -206,6 +206,9 @@ public class ContaService {
     }
 
     public Conta createConta(Conta conta) {
+
+        String numeroConta = gerarNumeroContaUnico();
+        conta.setNumero(numeroConta);
         return contaRepository.save(conta);
     }
 
@@ -217,4 +220,14 @@ public class ContaService {
     public void deleteConta(Long id) {
         contaRepository.deleteById(id);
     }
+
+    private String gerarNumeroContaUnico() {
+        String numeroConta;
+        do {
+            numeroConta = String.format("%08d", new Random().nextInt(100000000));
+        } while (contaRepository.existsByNumero(numeroConta));
+
+        return numeroConta;
+    }
+
 }
