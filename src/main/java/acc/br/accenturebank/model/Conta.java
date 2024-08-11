@@ -4,18 +4,22 @@ import acc.br.accenturebank.model.enums.TipoConta;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
-@Data
 @Entity
 @Table(name = "contas", uniqueConstraints = {@UniqueConstraint(columnNames = "numero"),})
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idConta;
+    private int id;
 
     @Column(unique = true, nullable = false)
     private String numero;
@@ -24,10 +28,10 @@ public class Conta {
     private BigDecimal saldo;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private boolean ativa = true;
+    private boolean ativa;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean pixAtivo = false;
+    private boolean pixAtivo;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -36,23 +40,21 @@ public class Conta {
     @Column(nullable = false)
     private BigDecimal saldoSeparado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAgencia")
     @JsonBackReference
     private Agencia agencia;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCliente")
     @JsonBackReference
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "conta")
+    @OneToMany(mappedBy = "conta", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Pix> chavesPix;
 
-    @OneToMany(mappedBy = "conta")
+    @OneToMany(mappedBy = "conta", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Transacao> transacoes;
-
-
 }

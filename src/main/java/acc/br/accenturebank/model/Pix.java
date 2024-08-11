@@ -3,13 +3,17 @@ package acc.br.accenturebank.model;
 import acc.br.accenturebank.model.enums.TipoChavePix;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "pixs", uniqueConstraints = {
         @UniqueConstraint(columnNames = "chave"),
 })
+@AllArgsConstructor
+@NoArgsConstructor
 public class Pix {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +30,5 @@ public class Pix {
     @JoinColumn(name = "idConta")
     @JsonBackReference
     private Conta conta;
-
 
 }

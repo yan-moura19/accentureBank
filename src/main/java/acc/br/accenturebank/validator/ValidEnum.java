@@ -1,21 +1,18 @@
-package acc.br.accenturebank.util;
+package acc.br.accenturebank.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = CPFValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidCPF {
-    String message() default "CPF inválido";
-
+@Constraint(validatedBy = EnumValidator.class)
+public @interface ValidEnum {
+    String message() default "Valor inválido para o enum";
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
+    Class<? extends Enum<?>> enumClass();
 }

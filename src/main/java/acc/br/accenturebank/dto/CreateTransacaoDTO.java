@@ -1,7 +1,9 @@
 package acc.br.accenturebank.dto;
 
+import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.Operacao;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 
 //DTO de Criação de Transação
 @Data
+@AllArgsConstructor
 public class CreateTransacaoDTO {
 
     @NotNull(message = "A Data da Transação não pode ser nula.")
@@ -27,8 +30,8 @@ public class CreateTransacaoDTO {
     @DecimalMin(value = "0.01", message = "Valor da transação deve ser maior que 0.")
     private BigDecimal valor;
 
-    @NotNull(message = "O id da Conta não pode ser nula.")
-    private long idConta;
+    @NotNull(message = "A Conta não pode ser nula.")
+    private Conta conta;
 }
 
 

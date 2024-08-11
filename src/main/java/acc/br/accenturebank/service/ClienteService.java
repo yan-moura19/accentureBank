@@ -1,5 +1,6 @@
 package acc.br.accenturebank.service;
 
+import acc.br.accenturebank.dto.ClienteResponseDTO;
 import acc.br.accenturebank.dto.CreateClienteDTO;
 import acc.br.accenturebank.dto.UpdateClienteDTO;
 import acc.br.accenturebank.model.Cliente;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
@@ -23,7 +25,7 @@ public class ClienteService {
         Optional<Cliente> cliente = clienteRepository.findByCpf(login);
 
         if (cliente.isEmpty()) {
-            cliente = clienteRepository.findByEmail(login);
+            cliente = Optional.ofNullable(this.getClienteByEmail(login));
         }
 
         if (cliente.isPresent() && cliente.get().getSenha().equals(senha)) {
@@ -36,24 +38,26 @@ public class ClienteService {
     public Cliente createCliente(CreateClienteDTO createClienteDTO) {
 
         try {
-            Cliente cliente = new Cliente();
+
 
             List<Conta> contas = new ArrayList<>();
 
-            cliente.setCpf(createClienteDTO.getCpf());
-            cliente.setNome(createClienteDTO.getNome());
-            cliente.setEmail(createClienteDTO.getEmail());
-            cliente.setSenha(createClienteDTO.getSenha());
-            cliente.setTelefone(createClienteDTO.getTelefone());
-            cliente.setCep(createClienteDTO.getCep());
-            cliente.setNumeroEndereco(createClienteDTO.getNumeroEndereco());
-            cliente.setComplemento(createClienteDTO.getComplemento());
-            cliente.setDataNascimento(createClienteDTO.getDataNascimento());
-            cliente.setContas(contas);
+            Cliente cliente = Cliente.builder()
+                    .cpf(createClienteDTO.getCpf())
+                    .nome(createClienteDTO.getNome())
+                    .email(createClienteDTO.getEmail())
+                    .senha(createClienteDTO.getSenha())
+                    .telefone(createClienteDTO.getTelefone())
+                    .cep(createClienteDTO.getCep())
+                    .numeroEndereco(createClienteDTO.getNumeroEndereco())
+                    .complemento(createClienteDTO.getComplemento())
+                    .dataNascimento(createClienteDTO.getDataNascimento())
+                    .contas(contas)
+                    .build();
 
             return clienteRepository.save(cliente);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao criar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao criar a Cliente: ".concat(e.getMessage()), e);
         }
     }
 
@@ -90,7 +94,7 @@ public class ClienteService {
 
             return clienteRepository.save(cliente);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao atualizar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao atualizar a Cliente: ".concat(e.getMessage()), e);
         }
 
     }
@@ -99,8 +103,14 @@ public class ClienteService {
         return clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente com id %d não foi encontrado.".formatted(id)));
     }
 
-    public List<Cliente> getAllClientes() {
-        return clienteRepository.findAll();
+    public Cliente getClienteByEmail(String email){
+        return clienteRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cliente com email %s não foi encontrado.".formatted(email)));
+    }
+
+    public List<ClienteResponseDTO> getAllClientes() {
+        return clienteRepository.findAll().stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
     }
 
     public void deleteCliente(int id) {
@@ -111,7 +121,11 @@ public class ClienteService {
 
             clienteRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao deletar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao deletar a Cliente: ".concat(e.getMessage()), e);
         }
+    }
+
+    private ClienteResponseDTO converterParaDTO(Cliente cliente){
+        return new ClienteResponseDTO(cliente);
     }
 }
