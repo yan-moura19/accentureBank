@@ -53,7 +53,7 @@ public class TransacaoService {
     }
 
     public Transacao updateTransacao(int id, Transacao transacao) {
-        transacao.setIdTransacao(id);
+        transacao.setId(id);
         return transacaoRepository.save(transacao);
     }
 

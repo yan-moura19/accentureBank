@@ -14,16 +14,18 @@ import java.util.UUID;
 @Table(name = "contas", uniqueConstraints = {@UniqueConstraint(columnNames = "numero"),})
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idConta;
+    private int id;
 
     @Column(unique = true, nullable = false)
     private String numero;
 
     @Column(nullable = false)
-    private BigDecimal saldo = BigDecimal.ZERO;
+    private BigDecimal saldo;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativa;
@@ -36,7 +38,7 @@ public class Conta {
     private TipoConta tipoConta;
 
     @Column(nullable = false)
-    private BigDecimal saldoSeparado = BigDecimal.ZERO;
+    private BigDecimal saldoSeparado;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAgencia")
@@ -55,9 +57,4 @@ public class Conta {
     @OneToMany(mappedBy = "conta", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Transacao> transacoes;
-
-    @PrePersist
-    public void generateNumero() {
-        this.numero = UUID.randomUUID().toString();
-    }
 }

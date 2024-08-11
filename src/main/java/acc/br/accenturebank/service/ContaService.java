@@ -2,10 +2,7 @@ package acc.br.accenturebank.service;
 
 import acc.br.accenturebank.dto.*;
 import acc.br.accenturebank.exception.SaldoInsuficienteException;
-import acc.br.accenturebank.model.Agencia;
-import acc.br.accenturebank.model.Cliente;
-import acc.br.accenturebank.model.Conta;
-import acc.br.accenturebank.model.Transacao;
+import acc.br.accenturebank.model.*;
 import acc.br.accenturebank.model.enums.Operacao;
 import acc.br.accenturebank.model.enums.TipoConta;
 import acc.br.accenturebank.repository.ContaRepository;
@@ -17,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Random;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -60,11 +59,18 @@ public class ContaService {
 
             String numero = gerarNumeroContaUnico();
 
+            List<Pix> chaves = new ArrayList<>();
+            List<Transacao> transacoes = new ArrayList<>();
+
             Conta conta = Conta.builder()
                     .tipoConta(createContaDTO.getTipoConta())
                     .agencia(agencia)
                     .cliente(cliente)
                     .numero(numero)
+                    .saldo(BigDecimal.ZERO)
+                    .saldoSeparado(BigDecimal.ZERO)
+                    .chavesPix(chaves)
+                    .transacoes(transacoes)
                     .build();
 
             return contaRepository.save(conta);

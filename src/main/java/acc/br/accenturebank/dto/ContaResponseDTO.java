@@ -8,6 +8,7 @@ import acc.br.accenturebank.model.enums.TipoConta;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class ContaResponseDTO {
@@ -19,11 +20,11 @@ public class ContaResponseDTO {
     private boolean pixAtivo;
     private TipoConta tipoConta;
     private Agencia agencia;
-    private Cliente cliente;
-    private Pix[] chavesPix;
+    private ClienteSimpleDTO cliente;
+    private List<Pix> chavesPix;
 
     public ContaResponseDTO(Conta conta) {
-        this.id = conta.getIdConta();
+        this.id = conta.getId();
         this.numero = conta.getNumero();
         this.saldo = conta.getSaldo();
         this.saldoSeparado = conta.getSaldoSeparado();
@@ -31,7 +32,7 @@ public class ContaResponseDTO {
         this.pixAtivo = conta.isPixAtivo();
         this.tipoConta = conta.getTipoConta();
         this.agencia = conta.getAgencia();
-        this.cliente = conta.getCliente();
-        this.chavesPix = (Pix[]) conta.getChavesPix().toArray();
+        this.cliente = new ClienteSimpleDTO(conta.getCliente());
+        this.chavesPix = conta.getChavesPix();
     }
 }

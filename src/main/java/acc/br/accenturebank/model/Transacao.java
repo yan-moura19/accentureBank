@@ -3,18 +3,23 @@ package acc.br.accenturebank.model;
 import acc.br.accenturebank.model.enums.Operacao;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 
 @Data
+@Table(name = "transacoes")
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Transacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idTransacao;
+    private int id;
 
     @Column(nullable = false)
     private LocalDateTime dataTransacao;

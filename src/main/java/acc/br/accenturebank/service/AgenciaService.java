@@ -1,5 +1,6 @@
 package acc.br.accenturebank.service;
 
+import acc.br.accenturebank.dto.AgenciaResponseDTO;
 import acc.br.accenturebank.dto.CreateAgenciaDTO;
 import acc.br.accenturebank.dto.UpdateAgenciaDTO;
 import acc.br.accenturebank.model.Agencia;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AgenciaService {
@@ -24,7 +26,7 @@ public class AgenciaService {
 
             Agencia agencia = new Agencia();
 
-            agencia.setNomeAgencia(agenciaDTO.getNomeAgencia());
+            agencia.setNome(agenciaDTO.getNomeAgencia());
             agencia.setEndereco(agenciaDTO.getEndereco());
             agencia.setTelefone(agenciaDTO.getTelefone());
             agencia.setContas(contas);
@@ -46,7 +48,7 @@ public class AgenciaService {
             String novoTelefone = agenciaDTO.getTelefone();
 
             if (novoNomeAgencia != null) {
-                agencia.setNomeAgencia(novoNomeAgencia);
+                agencia.setNome(novoNomeAgencia);
             }
 
             if (novoEndereco != null) {
@@ -69,8 +71,10 @@ public class AgenciaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Agência com id %d não encontrada.".formatted(id)));
     }
 
-    public List<Agencia> getAllAgencias() {
-        return agenciaRepository.findAll();
+    public List<AgenciaResponseDTO> getAllAgencias() {
+        return agenciaRepository.findAll().stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
     }
 
     public void deleteAgencia(int id) throws ResourceNotFoundException {
@@ -82,5 +86,9 @@ public class AgenciaService {
         } catch (Exception e) {
             throw new RuntimeException("Falha ao deletar a agência: ".concat(e.getMessage()), e);
         }
+    }
+
+    private AgenciaResponseDTO converterParaDTO(Agencia agencia){
+        return new AgenciaResponseDTO(agencia);
     }
 }
