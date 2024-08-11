@@ -23,7 +23,10 @@ public class Agencia {
     @Column(nullable = false)
     private String telefone;
 
-    @OneToMany(mappedBy = "agencia")
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "agencia"
+    )
     @JsonManagedReference
     private List<Conta> contas;
 

@@ -46,7 +46,11 @@ public class Cliente {
     private LocalDate dataNascimento;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "cliente"
+    )
     private List<Conta> contas = new ArrayList<>();
 
 

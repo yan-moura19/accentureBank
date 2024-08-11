@@ -53,7 +53,7 @@ public class ClienteService {
 
             return clienteRepository.save(cliente);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao criar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao criar a Cliente: ".concat(e.getMessage()), e);
         }
     }
 
@@ -90,7 +90,7 @@ public class ClienteService {
 
             return clienteRepository.save(cliente);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao atualizar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao atualizar a Cliente: ".concat(e.getMessage()), e);
         }
 
     }
@@ -111,7 +111,7 @@ public class ClienteService {
 
             clienteRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao deletar a cliente: ".concat(e.getMessage()), e);
+            throw new RuntimeException("Falha ao deletar a Cliente: ".concat(e.getMessage()), e);
         }
     }
 }

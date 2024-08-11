@@ -35,4 +35,16 @@ public class Transacao {
     private Conta conta;
 
 
+    public Transacao(
+            Conta conta,
+            LocalDateTime dataTransacao,
+            Operacao operacao,
+            String descricao,
+            BigDecimal valor) {
+        this.conta = conta;
+        this.dataTransacao = dataTransacao;
+        this.operacao = operacao;
+        this.descricao = descricao;
+        this.valor = valor;
+    }
 }

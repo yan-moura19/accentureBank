@@ -26,31 +26,48 @@ public class ContaController {
     @Autowired
     private ContaService contaService;
 
-    @Autowired
-    private ClienteService clienteService;
-    @Autowired
-    private AgenciaService agenciaService;
+
+
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ContaResponseDTO createConta(@RequestBody CreateContaDTO createContaDTO) {
+        Conta conta =  contaService.createConta(createContaDTO);
+        return new ContaResponseDTO(conta);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO getContaById(@PathVariable Long id) {
+        Conta conta = contaService.getContaById(id);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO updateConta(@PathVariable Long id, @RequestBody UpdateContaDTO updateContaDTO) {
+        Conta conta = contaService.updateConta(id, updateContaDTO);
+        return new ContaResponseDTO(conta);
+    }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Conta> getAllContas() {
         return contaService.getAllContas();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ContaDetalhesDTO> getContaById(@PathVariable Long id) {
-        Conta conta = contaService.getContaById(id);
-        ContaDetalhesDTO dto = new ContaDetalhesDTO();
-        dto.setIdConta(conta.getIdConta());
-        dto.setNumero(conta.getNumero());
-        dto.setSaldo(conta.getSaldo());
-        dto.setAtiva(conta.isAtiva());
-        dto.setPixAtivo(conta.isPixAtivo());
-        dto.setTipoConta(conta.getTipoConta());
-        dto.setNomeCliente(conta.getCliente().getNome());
-        dto.setNomeAgencia(conta.getAgencia().getNomeAgencia());
-        dto.setEnderecoAgencia(conta.getAgencia().getEndereco());
-        dto.setTelefoneAgencia(conta.getAgencia().getTelefone());
-        return ResponseEntity.ok(dto);
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteConta(@PathVariable Long id) {
+        contaService.deleteConta(id);
+    }
+
+
+    @PostMapping("/{idConta}/separar")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO separarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
+        Conta conta = contaService.separarValor(idConta, valor);
+        return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/deposito")
@@ -71,11 +88,7 @@ public class ContaController {
         return ResponseEntity.ok(contaAtualizada);
     }
 
-    @PostMapping("/{idConta}/separar")
-    public ResponseEntity<Conta> separarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
-        Conta conta = contaService.separarValor(idConta, valor);
-        return ResponseEntity.ok(conta);
-    }
+
 
     @PostMapping("/{idConta}/resgatar")
     public ResponseEntity<Conta> resgatarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
@@ -101,58 +114,7 @@ public class ContaController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createConta(@RequestBody ContaDTO contaDTO, int idCliente) {
-        Cliente cliente = clienteService.getClienteById(idCliente);
 
-        if (cliente == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
 
-        Agencia agencia = agenciaService.getAgenciaById(Integer.parseInt(contaDTO.getIdAgencia()));
-        if (agencia == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
 
-        Conta conta = new Conta();
-        conta.setNumero(contaDTO.getNumero());
-        conta.setSaldo(BigDecimal.ZERO);
-        conta.setAtiva(contaDTO.isAtiva());
-        conta.setPixAtivo(contaDTO.isPixAtivo());
-        conta.setSaldoSeparado(BigDecimal.ZERO);
-
-        conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
-        conta.setCliente(cliente);
-        conta.setAgencia(agencia);
-
-        Conta savedConta = contaService.createConta(conta);
-
-        ContaResponseDTO responseDTO = new ContaResponseDTO();
-        responseDTO.setIdConta(savedConta.getIdConta());
-        responseDTO.setNumero(savedConta.getNumero());
-        responseDTO.setSaldo(savedConta.getSaldo());
-        responseDTO.setAtiva(savedConta.isAtiva());
-        responseDTO.setPixAtivo(savedConta.isPixAtivo());
-
-        responseDTO.setTipoConta(savedConta.getTipoConta());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-    }
-
-    @PutMapping("/{id}")
-    public Conta updateConta(@PathVariable int id, @RequestBody ContaDTO contaDTO) {
-        Conta conta = contaService.getContaById((long) id);
-        conta.setNumero(contaDTO.getNumero());
-        conta.setAtiva(contaDTO.isAtiva());
-        conta.setPixAtivo(contaDTO.isPixAtivo());
-
-        conta.setTipoConta(TipoConta.valueOf(contaDTO.getTipoConta()));
-
-        return contaService.updateConta(id, conta);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteConta(@PathVariable Long id) {
-        contaService.deleteConta(id);
-    }
 }
