@@ -1,9 +1,7 @@
 package acc.br.accenturebank.dto;
 
 import acc.br.accenturebank.model.enums.TipoConta;
-import acc.br.accenturebank.util.ValidEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import acc.br.accenturebank.validator.ValidEnum;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

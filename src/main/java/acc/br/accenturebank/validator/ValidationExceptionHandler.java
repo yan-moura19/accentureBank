@@ -1,4 +1,4 @@
-package acc.br.accenturebank.util;
+package acc.br.accenturebank.validator;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

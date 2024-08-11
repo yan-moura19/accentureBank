@@ -41,7 +41,7 @@ public class ContaController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Conta> getAllContas() {
+    public List<ContaResponseDTO> getAllContas() {
         return contaService.getAllContas();
     }
 
@@ -88,12 +88,14 @@ public class ContaController {
     }
 
     @PostMapping("/{id}/saque")
+    @ResponseStatus(HttpStatus.OK)
     public ContaResponseDTO realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta conta = contaService.realizarSaque(id, valor);
         return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/pagar")
+    @ResponseStatus(HttpStatus.OK)
     public ContaResponseDTO realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
         Conta conta = contaService.realizarPagamento(id, valor);
         return new ContaResponseDTO(conta);

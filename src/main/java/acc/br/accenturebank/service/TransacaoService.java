@@ -18,10 +18,6 @@ public class TransacaoService {
     @Autowired
     private TransacaoRepository transacaoRepository;
 
-    @Autowired
-    private ContaService contaService;
-
-
 
     public List<Transacao> getAllTransacoes() {
         return transacaoRepository.findAll();
@@ -34,12 +30,12 @@ public class TransacaoService {
     public Transacao createTransacao(CreateTransacaoDTO createTransacaoDTO) {
 
         try{
-            long idConta = createTransacaoDTO.getIdConta();
 
-            Conta conta = contaService.getContaById(idConta);
+
+            Conta conta = createTransacaoDTO.getConta();
 
             if(conta == null){
-                throw new ResourceNotFoundException("Conta com id %d não foi encontrado.".formatted(idConta));
+                throw new ResourceNotFoundException("Conta com id não foi encontrada.");
             }
 
             Transacao transacao = new Transacao(

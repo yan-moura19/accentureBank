@@ -1,5 +1,6 @@
 package acc.br.accenturebank.dto;
 
+import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.Operacao;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -29,8 +30,8 @@ public class CreateTransacaoDTO {
     @DecimalMin(value = "0.01", message = "Valor da transação deve ser maior que 0.")
     private BigDecimal valor;
 
-    @NotNull(message = "O id da Conta não pode ser nula.")
-    private long idConta;
+    @NotNull(message = "A Conta não pode ser nula.")
+    private Conta conta;
 }
 
 

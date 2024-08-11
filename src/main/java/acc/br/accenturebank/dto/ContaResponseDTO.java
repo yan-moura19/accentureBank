@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Data
 public class ContaResponseDTO {
-    private int idConta;
+    private int id;
     private String numero;
     private BigDecimal saldo;
     private BigDecimal saldoSeparado;
@@ -23,7 +23,7 @@ public class ContaResponseDTO {
     private Pix[] chavesPix;
 
     public ContaResponseDTO(Conta conta) {
-        this.idConta = conta.getIdConta();
+        this.id = conta.getIdConta();
         this.numero = conta.getNumero();
         this.saldo = conta.getSaldo();
         this.saldoSeparado = conta.getSaldoSeparado();

@@ -21,6 +21,7 @@ import java.util.Random;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ContaService {
@@ -72,12 +73,14 @@ public class ContaService {
         }
     }
 
-    public Conta getContaById(Long id) {
+    public Conta getContaById(long id) {
         return contaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Conta com id %d não foi encontrada.".formatted(id)));
     }
 
-    public List<Conta> getAllContas() {
-        return contaRepository.findAll();
+    public List<ContaResponseDTO> getAllContas() {
+        return contaRepository.findAll().stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
     }
 
     public Conta updateConta(Long id, UpdateContaDTO updateContaDTO) {
@@ -171,7 +174,7 @@ public class ContaService {
                 Operacao.SEPARACAO,
                 "Separação de valor - R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return conta;
@@ -204,7 +207,7 @@ public class ContaService {
                 Operacao.RESGATE,
                 "Resgate de SaldoSeparado - R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return conta;
@@ -237,7 +240,7 @@ public class ContaService {
                 Operacao.TRANSFERENCIA,
                 "Transferência para a conta " + numeroContaDestino + " no valor de R$ " + valor,
                 valor,
-                contaOrigem.getIdConta()
+                contaOrigem
         ));
 
 
@@ -250,7 +253,7 @@ public class ContaService {
                 Operacao.TRANSFERENCIA,
                 "Recebimento de transferência da conta " + contaOrigem.getNumero() + " no valor de R$ " + valor ,
                 valor,
-                contaDestino.getIdConta()
+                contaDestino
         ));
 
         contaRepository.save(contaOrigem);
@@ -281,7 +284,7 @@ public class ContaService {
                 Operacao.RECARGA,
                 "Recarga de celular para o número " + numeroCelular + " no valor R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return contaRepository.save(conta);
@@ -303,7 +306,7 @@ public class ContaService {
                 Operacao.DEPOSITO,
                 "Deposito no valor R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return contaRepository.save(conta);
@@ -330,7 +333,7 @@ public class ContaService {
                 Operacao.SAQUE,
                 "Saque no valor R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return contaRepository.save(conta);
@@ -357,7 +360,7 @@ public class ContaService {
                 Operacao.PAGAMENTO,
                 "Pagamento no valor R$ " + valor,
                 valor,
-                conta.getIdConta()
+                conta
         ));
 
         return contaRepository.save(conta);
@@ -372,6 +375,10 @@ public class ContaService {
         } while (contaRepository.existsByNumero(numeroConta));
 
         return numeroConta;
+    }
+
+    private ContaResponseDTO converterParaDTO(Conta conta){
+        return new ContaResponseDTO(conta);
     }
 
 }

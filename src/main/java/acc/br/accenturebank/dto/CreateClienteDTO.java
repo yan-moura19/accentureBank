@@ -1,9 +1,8 @@
 package acc.br.accenturebank.dto;
 
-import acc.br.accenturebank.util.ValidCPF;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import acc.br.accenturebank.validator.ValidBirthDate;
+import acc.br.accenturebank.validator.ValidCPF;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -23,15 +22,17 @@ public class CreateClienteDTO {
     private String email;
 
     @NotBlank(message = "O cep não pode ser vazio.")
+    @Pattern(regexp = "^\\d{5}-\\d{3}$", message = "Deve ser um CEP válido no formato 58402-028")
     private String cep;
 
-    @NotBlank(message = "O cep não pode ser vazio.")
+    @NotBlank(message = "O numero do endereco não pode ser vazio.")
     private String numeroEndereco;
 
-    @NotBlank(message = "O complemento não pode ser vazio.")
     private String complemento;
 
-
+    @NotNull(message = "A data de nascimento não pode ser nula.")
+    @Past(message = "A data de nascimento deve estar no passado.")
+    @ValidBirthDate
     private LocalDate dataNascimento;
 
     @NotBlank(message = "A senha não pode ser vazia.")

@@ -1,6 +1,7 @@
 package acc.br.accenturebank.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 
@@ -14,6 +15,7 @@ import java.util.List;
         @UniqueConstraint(columnNames = "cpf"),
         @UniqueConstraint(columnNames = "email")
 })
+@Builder
 public class Cliente {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCliente;
@@ -42,7 +44,7 @@ public class Cliente {
     @Column(nullable = false)
     private String complemento;
 
-
+    @Column(nullable = false)
     private LocalDate dataNascimento;
 
     @JsonManagedReference

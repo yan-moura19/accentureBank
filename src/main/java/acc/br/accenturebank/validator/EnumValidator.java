@@ -1,6 +1,5 @@
-package acc.br.accenturebank.util;
+package acc.br.accenturebank.validator;
 
-import acc.br.accenturebank.util.ValidEnum;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

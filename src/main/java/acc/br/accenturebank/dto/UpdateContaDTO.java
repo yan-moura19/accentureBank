@@ -1,10 +1,9 @@
 package acc.br.accenturebank.dto;
 
 import acc.br.accenturebank.model.enums.TipoConta;
-import acc.br.accenturebank.util.ValidEnum;
+import acc.br.accenturebank.validator.ValidEnum;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;

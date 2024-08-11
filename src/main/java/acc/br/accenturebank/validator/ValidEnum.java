@@ -1,4 +1,4 @@
-package acc.br.accenturebank.util;
+package acc.br.accenturebank.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
