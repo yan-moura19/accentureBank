@@ -19,7 +19,7 @@ public class ContaResponseDTO {
     private boolean ativa;
     private boolean pixAtivo;
     private TipoConta tipoConta;
-    private Agencia agencia;
+    private AgenciaSimpleDTO agencia;
     private ClienteSimpleDTO cliente;
     private List<Pix> chavesPix;
 
@@ -31,7 +31,7 @@ public class ContaResponseDTO {
         this.ativa = conta.isAtiva();
         this.pixAtivo = conta.isPixAtivo();
         this.tipoConta = conta.getTipoConta();
-        this.agencia = conta.getAgencia();
+        this.agencia = new AgenciaSimpleDTO(conta.getAgencia());
         this.cliente = new ClienteSimpleDTO(conta.getCliente());
         this.chavesPix = conta.getChavesPix();
     }
