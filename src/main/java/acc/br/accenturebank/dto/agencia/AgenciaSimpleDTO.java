@@ -1,10 +1,7 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.agencia;
 
 import acc.br.accenturebank.model.Agencia;
-import acc.br.accenturebank.model.Conta;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class AgenciaSimpleDTO {

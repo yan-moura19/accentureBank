@@ -1,8 +1,8 @@
 package acc.br.accenturebank.controller;
 
-import acc.br.accenturebank.dto.AgenciaResponseDTO;
-import acc.br.accenturebank.dto.CreateAgenciaDTO;
-import acc.br.accenturebank.dto.UpdateAgenciaDTO;
+import acc.br.accenturebank.dto.agencia.AgenciaResponseDTO;
+import acc.br.accenturebank.dto.agencia.CreateAgenciaDTO;
+import acc.br.accenturebank.dto.agencia.UpdateAgenciaDTO;
 import acc.br.accenturebank.model.Agencia;
 import acc.br.accenturebank.service.AgenciaService;
 import jakarta.validation.Valid;

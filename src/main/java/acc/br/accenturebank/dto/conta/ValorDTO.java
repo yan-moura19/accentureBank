@@ -1,0 +1,14 @@
+package acc.br.accenturebank.dto.conta;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.math.BigDecimal;
+
+@Data
+public class ValorDTO {
+    @NotNull(message = "O Valor não pode ser nulo.")
+    @Min(value = 0, message = "O Valor deve ser um número inteiro não negativo.")
+    private BigDecimal valor;
+}

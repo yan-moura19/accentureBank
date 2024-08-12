@@ -1,14 +1,14 @@
 package acc.br.accenturebank.controller;
 
-import acc.br.accenturebank.dto.*;
+import acc.br.accenturebank.dto.conta.ValorDTO;
+import acc.br.accenturebank.dto.conta.*;
+import acc.br.accenturebank.dto.transacao.TransacaoSimpleDTO;
 import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -34,7 +34,7 @@ public class ContaController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO updateConta(@PathVariable Long id, @RequestBody UpdateContaDTO updateContaDTO) {
+    public ContaResponseDTO updateConta(@PathVariable long id, @RequestBody UpdateContaDTO updateContaDTO) {
         Conta conta = contaService.updateConta(id, updateContaDTO);
         return new ContaResponseDTO(conta);
     }
@@ -47,22 +47,22 @@ public class ContaController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteConta(@PathVariable Long id) {
+    public void deleteConta(@PathVariable long id) {
         contaService.deleteConta(id);
     }
 
 
-    @PostMapping("/{idConta}/separar")
+    @PostMapping("/{id}/separar")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO separarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
-        Conta conta = contaService.separarValor(idConta, valor);
+    public ContaResponseDTO separarValor(@PathVariable long id, @RequestParam ValorDTO valorDTO) {
+        Conta conta = contaService.separarValor(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
 
-    @PostMapping("/{idConta}/resgatar")
+    @PostMapping("/{id}/resgatar")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO resgatarValor(@PathVariable Long idConta, @RequestParam BigDecimal valor) {
-        Conta conta = contaService.resgatarSaldoSeparado(idConta, valor);
+    public ContaResponseDTO resgatarValor(@PathVariable long id, @RequestParam ValorDTO valorDTO) {
+        Conta conta = contaService.resgatarSaldoSeparado(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
 
@@ -75,31 +75,74 @@ public class ContaController {
 
     @PostMapping("/{id}/recarga")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO realizarRecarga(@PathVariable Long id, @RequestBody RecargaDTO recargaDTO) {
+    public ContaResponseDTO realizarRecarga(@PathVariable long id, @RequestBody RecargaDTO recargaDTO) {
         Conta conta = contaService.realizarRecarga(id, recargaDTO);
         return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/deposito")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta conta = contaService.realizarDeposito(id, valor);
+    public ContaResponseDTO realizarDeposito(@PathVariable long id, @RequestBody ValorDTO valorDTO) {
+        Conta conta = contaService.realizarDeposito(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/saque")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO realizarSaque(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta conta = contaService.realizarSaque(id, valor);
+    public ContaResponseDTO realizarSaque(@PathVariable long id, @RequestBody ValorDTO valorDTO) {
+        Conta conta = contaService.realizarSaque(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/pagar")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO realizarPagamento(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta conta = contaService.realizarPagamento(id, valor);
+    public ContaResponseDTO realizarPagamento(@PathVariable long id, @RequestBody ValorDTO valorDTO) {
+        Conta conta = contaService.realizarPagamento(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
+
+    @GetMapping("{id}/extrato")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransacaoSimpleDTO> getExtrato(@PathVariable long id){
+        return contaService.getExtrato(id);
+    }
+
+    @PostMapping("{id}/extrato/periodo")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransacaoSimpleDTO> getExtratoPeriodo(long id, ExtratoPeriodoDTO extratoPeriodoDTO){
+        return contaService.getExtratoPeriodo(id, extratoPeriodoDTO);
+    }
+
+    @PutMapping("{id}/ativar")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO ativarConta(@PathVariable long id){
+        Conta conta = contaService.ativarConta(id);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PutMapping("{id}/desativar")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO desativarConta(@PathVariable long id){
+        Conta conta = contaService.desativarConta(id);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PutMapping("{id}/ativarPix")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO ativarPix(@PathVariable long id){
+        Conta conta = contaService.ativarPix(id);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PutMapping("{id}/desativarPix")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO desativarPix(@PathVariable long id){
+        Conta conta = contaService.desativarPix(id);
+        return new ContaResponseDTO(conta);
+    }
+
+
+
 
 
 

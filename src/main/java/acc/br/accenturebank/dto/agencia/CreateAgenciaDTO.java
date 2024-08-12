@@ -1,14 +1,8 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.agencia;
 
-import acc.br.accenturebank.model.enums.Operacao;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 //DTO de Criação de Transação
 @Data
