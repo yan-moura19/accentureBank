@@ -82,8 +82,10 @@ public class ContaController {
 
     @PostMapping("/{id}/deposito")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO realizarDeposito(@PathVariable Long id, @RequestBody BigDecimal valor) {
-        Conta conta = contaService.realizarDeposito(id, valor);
+    public ContaResponseDTO realizarDeposito(@PathVariable Long id, @RequestBody Float valor) {
+
+        BigDecimal valorDecimal = new BigDecimal(valor);
+        Conta conta = contaService.realizarDeposito(id, valorDecimal);
         return new ContaResponseDTO(conta);
     }
 

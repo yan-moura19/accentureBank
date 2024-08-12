@@ -3,6 +3,8 @@ package acc.br.accenturebank.service;
 import acc.br.accenturebank.dto.ClienteResponseDTO;
 import acc.br.accenturebank.dto.CreateClienteDTO;
 import acc.br.accenturebank.dto.UpdateClienteDTO;
+import acc.br.accenturebank.exception.ClienteNaoEncontradoException;
+import acc.br.accenturebank.exception.SenhaIncorretaException;
 import acc.br.accenturebank.model.Cliente;
 import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.repository.ClienteRepository;
@@ -21,18 +23,22 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public Optional<Cliente> login(String login, String senha) {
+    public Cliente login(String login, String senha) {
         Optional<Cliente> cliente = clienteRepository.findByCpf(login);
 
         if (cliente.isEmpty()) {
-            cliente = Optional.ofNullable(this.getClienteByEmail(login));
+            cliente = clienteRepository.findByEmail(login);
         }
 
-        if (cliente.isPresent() && cliente.get().getSenha().equals(senha)) {
-            return cliente;
+        if (cliente.isEmpty() || cliente == null ) {
+            throw new ClienteNaoEncontradoException("Cliente não encontrado.");
         }
 
-        return Optional.empty();
+        if (!cliente.get().getSenha().equals(senha)) {
+            throw new SenhaIncorretaException("Senha incorreta.");
+        }
+
+        return cliente.get();
     }
 
     public Cliente createCliente(CreateClienteDTO createClienteDTO) {
