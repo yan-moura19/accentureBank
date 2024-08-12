@@ -4,6 +4,7 @@ import acc.br.accenturebank.model.enums.TipoChavePix;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "pixs", uniqueConstraints = {
         @UniqueConstraint(columnNames = "chave"),
 })
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pix {

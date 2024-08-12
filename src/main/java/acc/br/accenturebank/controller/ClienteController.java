@@ -1,8 +1,8 @@
 package acc.br.accenturebank.controller;
 
-import acc.br.accenturebank.dto.ClienteResponseDTO;
-import acc.br.accenturebank.dto.CreateClienteDTO;
-import acc.br.accenturebank.dto.UpdateClienteDTO;
+import acc.br.accenturebank.dto.cliente.ClienteResponseDTO;
+import acc.br.accenturebank.dto.cliente.CreateClienteDTO;
+import acc.br.accenturebank.dto.cliente.UpdateClienteDTO;
 import acc.br.accenturebank.model.Cliente;
 
 

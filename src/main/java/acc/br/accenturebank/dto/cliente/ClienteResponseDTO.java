@@ -1,14 +1,15 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.cliente;
 
+import acc.br.accenturebank.dto.conta.ContaSimpleDTO;
 import acc.br.accenturebank.model.Cliente;
-import acc.br.accenturebank.model.Conta;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
-public class ClienteSimpleDTO {
+public class ClienteResponseDTO {
     private int id;
     private String cpf;
     private String nome;
@@ -18,8 +19,9 @@ public class ClienteSimpleDTO {
     private String numeroEndereco;
     private String complemento;
     private LocalDate dataNascimento;
+    private List<ContaSimpleDTO> contas;
 
-    public ClienteSimpleDTO(Cliente cliente) {
+    public ClienteResponseDTO(Cliente cliente) {
         this.id = cliente.getId();
         this.cpf = cliente.getCpf();
         this.nome = cliente.getNome();
@@ -29,5 +31,8 @@ public class ClienteSimpleDTO {
         this.numeroEndereco = cliente.getNumeroEndereco();
         this.complemento = cliente.getComplemento();
         this.dataNascimento = cliente.getDataNascimento();
+        this.contas = cliente.getContas().stream()
+                .map(ContaSimpleDTO::new)
+                .collect(Collectors.toList());
     }
 }

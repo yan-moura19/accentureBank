@@ -1,17 +1,15 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.conta;
 
-import acc.br.accenturebank.model.Agencia;
-import acc.br.accenturebank.model.Cliente;
+import acc.br.accenturebank.dto.agencia.AgenciaSimpleDTO;
+import acc.br.accenturebank.dto.cliente.ClienteSimpleDTO;
 import acc.br.accenturebank.model.Conta;
-import acc.br.accenturebank.model.Pix;
 import acc.br.accenturebank.model.enums.TipoConta;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
-public class ContaResponseDTO {
+public class ContaSimpleDTO {
     private int id;
     private String numero;
     private BigDecimal saldo;
@@ -21,9 +19,9 @@ public class ContaResponseDTO {
     private TipoConta tipoConta;
     private AgenciaSimpleDTO agencia;
     private ClienteSimpleDTO cliente;
-    private List<Pix> chavesPix;
 
-    public ContaResponseDTO(Conta conta) {
+
+    public ContaSimpleDTO(Conta conta) {
         this.id = conta.getId();
         this.numero = conta.getNumero();
         this.saldo = conta.getSaldo();
@@ -33,6 +31,5 @@ public class ContaResponseDTO {
         this.tipoConta = conta.getTipoConta();
         this.agencia = new AgenciaSimpleDTO(conta.getAgencia());
         this.cliente = new ClienteSimpleDTO(conta.getCliente());
-        this.chavesPix = conta.getChavesPix();
     }
 }

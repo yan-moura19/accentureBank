@@ -1,4 +1,4 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.conta;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
