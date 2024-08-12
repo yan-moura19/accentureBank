@@ -1,4 +1,4 @@
-package acc.br.accenturebank.dto;
+package acc.br.accenturebank.dto.cliente;
 
 import acc.br.accenturebank.validator.ValidBirthDate;
 import acc.br.accenturebank.validator.ValidCPF;
