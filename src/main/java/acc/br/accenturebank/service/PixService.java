@@ -55,7 +55,11 @@ public class PixService {
     }
 
     public Pix getPixById(int id) {
-        return pixRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pix com id %d não foi encontrado.".formatted(id)));
+        return pixRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Chave Pix com id %d não foi encontrado.".formatted(id)));
+    }
+
+    public Pix getPixByChave(String chave){
+        return pixRepository.findByChave(chave).orElseThrow(() -> new ResourceNotFoundException("Chave Pix com chave %s não foi encontrado.".formatted(chave)));
     }
 
     public List<PixResponseDTO> getAllPix() {

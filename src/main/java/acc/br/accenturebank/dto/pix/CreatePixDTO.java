@@ -2,6 +2,7 @@ package acc.br.accenturebank.dto.pix;
 
 import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.TipoChavePix;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class CreatePixDTO {
             message = "O Tipo de Chave Pix deve ser um dos seguintes: EMAIL, TELEFONE, CPF.")
     private TipoChavePix tipo;
 
-    @NotNull(message = "A chave não pode ser nula.")
+    @NotBlank(message = "A chave não pode ser nula.")
     private String chave;
 
     @NotNull(message = "A Conta não pode ser nula.")

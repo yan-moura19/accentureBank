@@ -39,6 +39,9 @@ public class ContaService {
     @Autowired
     private TransacaoService transacaoService;
 
+    @Autowired
+    private PixService pixService;
+
 
 
 
@@ -252,7 +255,7 @@ public class ContaService {
 
         transacaoService.createTransacao(new CreateTransacaoDTO(
                 LocalDateTime.now(),
-                Operacao.TRANSFERENCIA,
+                Operacao.RECEBIMENTO_TRANSFERENCIA,
                 "Recebimento de transferência da conta " + contaOrigem.getNumero() + " no valor de R$ " + valor ,
                 valor,
                 contaDestino
@@ -443,6 +446,53 @@ public class ContaService {
         conta.setAtiva(false);
 
         return contaRepository.save(conta);
+    }
+
+    public Conta realizarPix(long id, PixDTO pixDTO){
+
+        Conta contaOrigem = this.getContaById(id);
+        String chave = pixDTO.getChave();
+        BigDecimal valor = pixDTO.getValor();
+        Pix pix = pixService.getPixByChave(chave);
+        Conta contaDestino = pix.getConta();
+
+        BigDecimal saldoOrigem = contaOrigem.getSaldo();
+
+        if (saldoOrigem.compareTo(valor) < 0) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para transferência");
+        }
+
+
+        contaOrigem.setSaldo(saldoOrigem.subtract(valor));
+
+
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.PIX,
+                "PIX para a conta " + contaDestino.getNumero() + " no valor de R$ " + valor,
+                valor,
+                contaOrigem
+        ));
+
+
+        BigDecimal saldoDestino = contaDestino.getSaldo();
+
+        contaDestino.setSaldo(saldoDestino.add(valor));
+
+        transacaoService.createTransacao(new CreateTransacaoDTO(
+                LocalDateTime.now(),
+                Operacao.RECEBIMENTO_PIX,
+                "PIX de transferência da conta " + contaOrigem.getNumero() + " no valor de R$ " + valor ,
+                valor,
+                contaDestino
+        ));
+
+        contaRepository.save(contaOrigem);
+        contaRepository.save(contaDestino);
+
+        return contaOrigem;
+
+
     }
 
 

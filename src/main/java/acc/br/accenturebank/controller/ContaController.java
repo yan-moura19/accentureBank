@@ -51,7 +51,6 @@ public class ContaController {
         contaService.deleteConta(id);
     }
 
-
     @PostMapping("/{id}/separar")
     @ResponseStatus(HttpStatus.OK)
     public ContaResponseDTO separarValor(@PathVariable long id, @RequestParam ValorDTO valorDTO) {
@@ -138,6 +137,13 @@ public class ContaController {
     @ResponseStatus(HttpStatus.OK)
     public ContaResponseDTO desativarPix(@PathVariable long id){
         Conta conta = contaService.desativarPix(id);
+        return new ContaResponseDTO(conta);
+    }
+
+    @PostMapping("{id}/pix")
+    @ResponseStatus(HttpStatus.OK)
+    public ContaResponseDTO realizarPix(@PathVariable long id, @RequestBody PixDTO pixDTO){
+        Conta conta = contaService.realizarPix(id, pixDTO);
         return new ContaResponseDTO(conta);
     }
 
