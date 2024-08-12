@@ -1,5 +1,5 @@
 package acc.br.accenturebank.model.enums;
 
 public enum TipoChavePix {
-    EMAIL, TELEFONE, CPF
+    EMAIL, TELEFONE, CPF, ALEATORIO
 }

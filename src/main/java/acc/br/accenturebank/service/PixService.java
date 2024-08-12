@@ -12,7 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static acc.br.accenturebank.model.enums.TipoChavePix.ALEATORIO;
+
 
 @Service
 public class PixService {
@@ -20,12 +25,29 @@ public class PixService {
     @Autowired
     private PixRepository pixRepository;
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-z]{2,}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TELEFONE_PATTERN = Pattern.compile("^(\\+\\d{2}\\s?)?\\(?\\d{2}\\)?\\s?\\d{4,5}-\\d{4}$");
+    private static final Pattern CPF_PATTERN = Pattern.compile("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$|^\\d{11}$");
+
+
     public Pix createPix(CreatePixDTO createPixDTO) {
 
+        TipoChavePix tipo = createPixDTO.getTipo();
+        String chave = createPixDTO.getChave();
+        Conta conta = createPixDTO.getConta();
+
+        if (!isChaveValida(tipo, chave)) {
+            throw new IllegalArgumentException("Chave Pix inválida para o tipo especificado");
+        }
+
+        if (tipo == ALEATORIO) {
+            chave = UUID.randomUUID().toString();
+        }
+
         Pix pix = Pix.builder()
-                .tipo(createPixDTO.getTipo())
-                .chave(createPixDTO.getChave())
-                .conta(createPixDTO.getConta())
+                .tipo(tipo)
+                .chave(chave)
+                .conta(conta)
                 .build();
 
         return pixRepository.save(pix);
@@ -78,6 +100,15 @@ public class PixService {
 
     private PixResponseDTO converterParaDTO(Pix pix){
         return new PixResponseDTO(pix);
+    }
+
+    private boolean isChaveValida(TipoChavePix tipo, String chave) {
+        return switch (tipo) {
+            case EMAIL -> EMAIL_PATTERN.matcher(chave).matches();
+            case TELEFONE -> TELEFONE_PATTERN.matcher(chave).matches();
+            case CPF -> CPF_PATTERN.matcher(chave).matches();
+            case ALEATORIO -> chave == null || chave.isEmpty();
+        };
     }
 
 }

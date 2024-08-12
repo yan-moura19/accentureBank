@@ -53,14 +53,14 @@ public class ContaController {
 
     @PostMapping("/{id}/separar")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO separarValor(@PathVariable long id, @RequestParam ValorDTO valorDTO) {
+    public ContaResponseDTO separarValor(@PathVariable long id, @RequestBody ValorDTO valorDTO) {
         Conta conta = contaService.separarValor(id, valorDTO);
         return new ContaResponseDTO(conta);
     }
 
     @PostMapping("/{id}/resgatar")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO resgatarValor(@PathVariable long id, @RequestParam ValorDTO valorDTO) {
+    public ContaResponseDTO resgatarValor(@PathVariable long id, @RequestBody ValorDTO valorDTO) {
         Conta conta = contaService.resgatarSaldoSeparado(id, valorDTO);
         return new ContaResponseDTO(conta);
     }

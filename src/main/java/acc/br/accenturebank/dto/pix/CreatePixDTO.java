@@ -11,11 +11,11 @@ import lombok.Data;
 public class CreatePixDTO {
 
     @NotNull(message = "Tipo da Chave não pode ser nula.")
-    @Pattern(regexp = "EMAIL|TELEFONE|CPF",
+    @Pattern(regexp = "EMAIL|TELEFONE|CPF|ALEATORIO",
             message = "O Tipo de Chave Pix deve ser um dos seguintes: EMAIL, TELEFONE, CPF.")
     private TipoChavePix tipo;
 
-    @NotBlank(message = "A chave não pode ser nula.")
+
     private String chave;
 
     @NotNull(message = "A Conta não pode ser nula.")
