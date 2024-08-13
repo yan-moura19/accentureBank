@@ -4,9 +4,11 @@ import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.TipoChavePix;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class UpdatePixDTO {
 
