@@ -1,9 +1,15 @@
 package acc.br.accenturebank.dto.agencia;
 
 import acc.br.accenturebank.model.Agencia;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AgenciaSimpleDTO {
     private int id;
     private String nome;

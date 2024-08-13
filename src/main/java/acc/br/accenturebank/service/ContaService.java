@@ -112,7 +112,7 @@ public class ContaService {
        }
 
        if(novoSaldoSeparado != null){
-           conta.setSaldo(novoSaldoSeparado);
+           conta.setSaldoSeparado(novoSaldoSeparado);
        }
 
        conta.setAtiva(novoAtiva);
@@ -138,7 +138,7 @@ public class ContaService {
        return contaRepository.save(conta);
     }
 
-    public void deleteConta(Long id) {
+    public void deleteConta(long id) {
 
         this.getContaById(id);
 
