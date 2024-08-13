@@ -5,9 +5,11 @@ import acc.br.accenturebank.validator.ValidEnum;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class CreateContaDTO {
     @NotNull(message = "O Tipo da Conta não pode ser nula.")
     @ValidEnum(enumClass = TipoConta.class, message = "Tipo de Conta Inválido.")
