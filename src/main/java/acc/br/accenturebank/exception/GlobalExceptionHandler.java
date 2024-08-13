@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public Map<String, String> handleIllegalArgumentException(ResourceNotFoundException ex) {
+    public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("mensagem", ex.getMessage());
         return errorResponse;
