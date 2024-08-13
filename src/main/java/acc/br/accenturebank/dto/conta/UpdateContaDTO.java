@@ -4,11 +4,13 @@ import acc.br.accenturebank.model.enums.TipoConta;
 import acc.br.accenturebank.validator.ValidEnum;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@AllArgsConstructor
 public class UpdateContaDTO {
     @ValidEnum(enumClass = TipoConta.class, message = "Tipo de Conta Inválido.")
     private TipoConta tipoConta;

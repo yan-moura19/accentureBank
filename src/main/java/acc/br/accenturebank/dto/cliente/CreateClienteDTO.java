@@ -3,11 +3,13 @@ package acc.br.accenturebank.dto.cliente;
 import acc.br.accenturebank.validator.ValidBirthDate;
 import acc.br.accenturebank.validator.ValidCPF;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class CreateClienteDTO {
 
     @NotBlank(message = "O CPF não pode ser vazio.")

@@ -4,12 +4,14 @@ import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.Operacao;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class UpdateTransacaoDTO {
 
     private LocalDateTime dataTransacao;

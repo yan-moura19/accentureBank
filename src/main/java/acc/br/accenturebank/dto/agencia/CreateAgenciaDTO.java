@@ -2,10 +2,14 @@ package acc.br.accenturebank.dto.agencia;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 //DTO de Criação de Transação
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateAgenciaDTO {
 
     @NotBlank(message = "O Nome da Agência não pode ser vazia.")

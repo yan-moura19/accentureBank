@@ -3,6 +3,7 @@ package acc.br.accenturebank.service;
 import acc.br.accenturebank.dto.cliente.ClienteResponseDTO;
 import acc.br.accenturebank.dto.cliente.CreateClienteDTO;
 import acc.br.accenturebank.dto.cliente.UpdateClienteDTO;
+import acc.br.accenturebank.exception.InvalidCredentialsException;
 import acc.br.accenturebank.model.Cliente;
 import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.repository.ClienteRepository;
@@ -22,17 +23,21 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public Optional<Cliente> login(String login, String senha) {
-        Optional<Cliente> cliente = clienteRepository.findByCpf(login);
+        try{
+            Optional<Cliente> cliente = clienteRepository.findByCpf(login);
 
-        if (cliente.isEmpty()) {
-            cliente = Optional.ofNullable(this.getClienteByEmail(login));
+            if (cliente.isEmpty()) {
+                cliente = Optional.ofNullable(this.getClienteByEmail(login));
+            }
+
+            if (cliente.isPresent() && cliente.get().getSenha().equals(senha)) {
+                return cliente;
+            }
+
+            return Optional.empty();
+        }catch  (ResourceNotFoundException e){
+            throw new InvalidCredentialsException("Credenciais Inválidas.");
         }
-
-        if (cliente.isPresent() && cliente.get().getSenha().equals(senha)) {
-            return cliente;
-        }
-
-        return Optional.empty();
     }
 
     public Cliente createCliente(CreateClienteDTO createClienteDTO) {
