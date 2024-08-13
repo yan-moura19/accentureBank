@@ -3,11 +3,13 @@ package acc.br.accenturebank.dto.conta;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class PixDTO {
 
     @NotBlank(message = "A chave não pode ser nula.")

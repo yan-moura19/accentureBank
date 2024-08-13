@@ -2,12 +2,18 @@ package acc.br.accenturebank.dto.agencia;
 
 import acc.br.accenturebank.dto.conta.ContaSimpleDTO;
 import acc.br.accenturebank.model.Agencia;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AgenciaResponseDTO {
     private int id;
     private String nome;
