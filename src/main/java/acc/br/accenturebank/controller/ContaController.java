@@ -2,8 +2,10 @@ package acc.br.accenturebank.controller;
 
 import acc.br.accenturebank.dto.conta.ValorDTO;
 import acc.br.accenturebank.dto.conta.*;
+import acc.br.accenturebank.dto.pix.CreatePixDTO;
 import acc.br.accenturebank.dto.transacao.TransacaoSimpleDTO;
 import acc.br.accenturebank.model.Conta;
+import acc.br.accenturebank.model.Pix;
 import acc.br.accenturebank.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,13 @@ public class ContaController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteConta(@PathVariable long id) {
         contaService.deleteConta(id);
+    }
+
+    @PostMapping("/{id}/chavepix")
+    @ResponseStatus(HttpStatus.OK)
+    public Pix criaChavePix(@PathVariable long id, @RequestBody CreatePixDTO  createPixDTO) {
+        Pix pix = contaService.addPixToConta(createPixDTO);
+        return pix;
     }
 
     @PostMapping("/{id}/separar")

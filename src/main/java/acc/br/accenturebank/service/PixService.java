@@ -25,17 +25,17 @@ public class PixService {
     @Autowired
     private PixRepository pixRepository;
 
+
+
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-z]{2,}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern TELEFONE_PATTERN = Pattern.compile("^(\\+\\d{2}\\s?)?\\(?\\d{2}\\)?\\s?\\d{4,5}-\\d{4}$");
     private static final Pattern CPF_PATTERN = Pattern.compile("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$|^\\d{11}$");
 
 
-    public Pix createPix(CreatePixDTO createPixDTO) {
+    public Pix createPix(Pix createPixDTO) {
 
         TipoChavePix tipo = createPixDTO.getTipo();
         String chave = createPixDTO.getChave();
-        Conta conta = createPixDTO.getConta();
-
         if (!isChaveValida(tipo, chave)) {
             throw new IllegalArgumentException("Chave Pix inválida para o tipo especificado");
         }
@@ -47,7 +47,7 @@ public class PixService {
         Pix pix = Pix.builder()
                 .tipo(tipo)
                 .chave(chave)
-                .conta(conta)
+                .conta(createPixDTO.getConta())
                 .build();
 
         return pixRepository.save(pix);
