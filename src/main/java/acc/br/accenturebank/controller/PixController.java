@@ -18,12 +18,12 @@ public class PixController {
     @Autowired
     private PixService pixService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public PixResponseDTO createPix(@RequestBody CreatePixDTO createPixDTO) {
-        Pix pix = pixService.createPix(createPixDTO);
-        return new PixResponseDTO(pix);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public PixResponseDTO createPix(@RequestBody CreatePixDTO createPixDTO) {
+//        Pix pix = pixService.createPix(createPixDTO);
+//        return new PixResponseDTO(pix);
+//    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

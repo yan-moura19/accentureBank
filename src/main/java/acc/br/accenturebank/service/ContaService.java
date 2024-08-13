@@ -2,6 +2,7 @@ package acc.br.accenturebank.service;
 
 import acc.br.accenturebank.dto.conta.ValorDTO;
 import acc.br.accenturebank.dto.conta.*;
+import acc.br.accenturebank.dto.pix.CreatePixDTO;
 import acc.br.accenturebank.dto.transacao.CreateTransacaoDTO;
 import acc.br.accenturebank.dto.transacao.TransacaoSimpleDTO;
 import acc.br.accenturebank.exception.PeriodoInvalidoException;
@@ -43,6 +44,17 @@ public class ContaService {
     private PixService pixService;
 
 
+    public Pix addPixToConta(CreatePixDTO createPixDTO) {
+        Long idConta = Long.parseLong(createPixDTO.getIdConta());
+        Conta conta = contaRepository.findById(idConta)
+                .orElseThrow(() -> new ResourceNotFoundException("Conta não encontrada para o ID " + idConta));
+        Pix newPix = new Pix();
+        newPix.setConta(conta);
+        newPix.setTipo(createPixDTO.getTipo());
+        newPix.setChave(createPixDTO.getChave());
+
+        return pixService.createPix(newPix);
+    }
 
 
     public Conta createConta(CreateContaDTO createContaDTO) {

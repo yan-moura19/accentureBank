@@ -21,5 +21,9 @@ public class CreatePixDTO {
     private String chave;
 
     @NotNull(message = "A Conta não pode ser nula.")
-    private Conta conta;
+    private String IdConta;
+
+    public CreatePixDTO(CreatePixDTO createPixDTO) {
+
+    }
 }
