@@ -4,14 +4,18 @@ import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.enums.Operacao;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 //DTO de Criação de Transação
 @Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CreateTransacaoDTO {
 
     @NotNull(message = "A Data da Transação não pode ser nula.")

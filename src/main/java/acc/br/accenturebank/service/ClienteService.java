@@ -1,5 +1,6 @@
 package acc.br.accenturebank.service;
 
+import acc.br.accenturebank.dto.cliente.ClienteDetailedDTO;
 import acc.br.accenturebank.dto.cliente.ClienteResponseDTO;
 import acc.br.accenturebank.dto.cliente.CreateClienteDTO;
 import acc.br.accenturebank.dto.cliente.UpdateClienteDTO;
@@ -103,7 +104,7 @@ public class ClienteService {
         return clienteRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cliente com email %s não foi encontrado.".formatted(email)));
     }
 
-    public List<ClienteResponseDTO> getAllClientes() {
+    public List<ClienteDetailedDTO> getAllClientes() {
         return clienteRepository.findAll().stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
@@ -119,7 +120,7 @@ public class ClienteService {
 
     }
 
-    private ClienteResponseDTO converterParaDTO(Cliente cliente){
-        return new ClienteResponseDTO(cliente);
+    private ClienteDetailedDTO converterParaDTO(Cliente cliente){
+        return new ClienteDetailedDTO(cliente);
     }
 }

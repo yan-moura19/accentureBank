@@ -109,6 +109,63 @@ public class ContaServiceTest {
     }
 
     @Test
+    public void testCreateConta_ClienteNotFound() {
+
+        int clienteId = 1;
+        CreateContaDTO createContaDTO = new CreateContaDTO(TipoConta.CORRENTE, clienteId, 1);
+
+
+        when(clienteService.getClienteById(clienteId)).thenReturn(null);
+
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.createConta(createContaDTO);
+        });
+
+
+        assertEquals("Cliente com id %d não foi encontrado.".formatted(clienteId), exception.getMessage());
+
+
+        verify(contaRepository, never()).save(any(Conta.class));
+    }
+
+    @Test
+    public void testCreateConta_AgenciaNotFound() {
+        // Arrange
+        int agenciaId = 1;
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        CreateContaDTO createContaDTO = new CreateContaDTO(TipoConta.CORRENTE, 1, agenciaId);
+
+        // Simula o cliente encontrado, mas a agência não encontrada
+        when(clienteService.getClienteById(1)).thenReturn(cliente);
+        when(agenciaService.getAgenciaById(agenciaId)).thenReturn(null);
+
+        // Act
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.createConta(createContaDTO);
+        });
+
+        // Assert
+        assertEquals("Agência com id %d não foi encontrada.".formatted(agenciaId), exception.getMessage());
+
+        // Verifica que a conta não foi salva
+        verify(contaRepository, never()).save(any(Conta.class));
+    }
+
+    @Test
     public void testGetContaById_Success() {
         Conta conta = Conta.builder()
                 .id(1)
@@ -121,6 +178,26 @@ public class ContaServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getId());
+    }
+
+    @Test
+    public void testGetContaById_ContaNotFound() {
+
+        long contaId = 1L;
+
+
+        when(contaRepository.findById(contaId)).thenReturn(Optional.empty());
+
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.getContaById(contaId);
+        });
+
+
+        assertEquals("Conta com id %d não foi encontrada.".formatted(contaId), exception.getMessage());
+
+
+        verify(contaRepository, times(1)).findById(contaId);
     }
 
     @Test
@@ -205,6 +282,50 @@ public class ContaServiceTest {
     }
 
     @Test
+    public void testUpdateConta_AgenciaNotFound() {
+        int contaId = 1;
+        int novoIdAgencia = 2;
+
+        UpdateContaDTO updateContaDTO = new UpdateContaDTO();
+        updateContaDTO.setIdAgencia(novoIdAgencia);
+
+        Conta conta = Conta.builder().id(contaId).build();
+        when(contaRepository.findById((long) contaId)).thenReturn(Optional.of(conta));
+        when(agenciaService.getAgenciaById(novoIdAgencia)).thenReturn(null);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.updateConta(contaId, updateContaDTO);
+        });
+
+        assertEquals("Agência com id %d não foi encontrada.".formatted(novoIdAgencia), exception.getMessage());
+        verify(contaRepository, times(1)).findById((long) contaId);
+        verify(agenciaService, times(1)).getAgenciaById(novoIdAgencia);
+    }
+
+    @Test
+    public void testUpdateConta_ClienteNotFound() {
+        int contaId = 1;
+        int novoIdCliente = 3;
+
+        UpdateContaDTO updateContaDTO = new UpdateContaDTO();
+        updateContaDTO.setIdCliente(novoIdCliente);
+
+        Conta conta = Conta.builder().id(contaId).build();
+        when(contaRepository.findById((long) contaId)).thenReturn(Optional.of(conta));
+        when(agenciaService.getAgenciaById(anyInt())).thenReturn(new Agencia());
+        when(clienteService.getClienteById(novoIdCliente)).thenReturn(null);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.updateConta(contaId, updateContaDTO);
+        });
+
+        assertEquals("Cliente com id %d não foi encontrado.".formatted(novoIdCliente), exception.getMessage());
+        verify(contaRepository, times(1)).findById((long) contaId);
+        verify(agenciaService, times(1)).getAgenciaById(anyInt());
+        verify(clienteService, times(1)).getClienteById(novoIdCliente);
+    }
+
+    @Test
     public void testDeleteConta_Success() {
         Conta conta = Conta.builder()
                 .id(1)
@@ -221,6 +342,20 @@ public class ContaServiceTest {
         contaService.deleteConta(1);
 
         verify(contaRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    public void testGetContaByNumero_ContaNotFound() {
+        String numeroConta = "00000001";
+
+        when(contaRepository.findByNumero(numeroConta)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            contaService.getContaByNumero(numeroConta);
+        });
+
+        assertEquals("Conta de numero %s não foi encontrada.".formatted(numeroConta), exception.getMessage());
+        verify(contaRepository, times(1)).findByNumero(numeroConta);
     }
 
     @Test
@@ -249,6 +384,41 @@ public class ContaServiceTest {
     }
 
     @Test
+    public void testSepararValor_ValorNegativo() {
+        long id = 1L;
+        ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(-100));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            contaService.separarValor(id, valorDTO);
+        });
+
+        assertEquals("O valor não pode ser negativo.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testSepararValor_SaldoInsuficiente() {
+        int id = 1;
+        ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(500));
+        Conta conta = Conta.builder()
+                .id(id)
+                .saldo(BigDecimal.valueOf(100))
+                .saldoSeparado(BigDecimal.ZERO)
+                .build();
+
+        when(contaRepository.findById((long) id)).thenReturn(Optional.of(conta));
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.separarValor(id, valorDTO);
+        });
+
+        assertEquals("Saldo insuficiente para separar o valor.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
     public void testResgatarSaldoSeparado_Success() {
         Conta conta = Conta.builder()
                 .id(1)
@@ -270,6 +440,41 @@ public class ContaServiceTest {
         assertNotNull(result);
         assertEquals(BigDecimal.valueOf(100), result.getSaldo());
         assertEquals(BigDecimal.valueOf(50), result.getSaldoSeparado());
+    }
+
+    @Test
+    public void testResgatarSaldoSeparado_ValorNegativo() {
+        long id = 1L;
+        ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(-100));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            contaService.resgatarSaldoSeparado(id, valorDTO);
+        });
+
+        assertEquals("O valor não pode ser negativo.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testResgatarSaldoSeparado_SaldoSeparadoInsuficiente() {
+        int id = 1;
+        ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(500));
+        Conta conta = Conta.builder()
+                .id(id)
+                .saldo(BigDecimal.valueOf(100))
+                .saldoSeparado(BigDecimal.valueOf(100))
+                .build();
+
+        when(contaRepository.findById((long) id)).thenReturn(Optional.of(conta));
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.resgatarSaldoSeparado(id, valorDTO);
+        });
+
+        assertEquals("SaldoSeparado insuficiente para separar o valor.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
 
     @Test
@@ -314,6 +519,56 @@ public class ContaServiceTest {
     }
 
     @Test
+    public void testTransferir_SaldoInsuficiente() {
+        int idContaOrigem = 1;
+        String numeroContaDestino = "00000002";
+        BigDecimal valor = BigDecimal.valueOf(500);
+
+        Conta contaOrigem = Conta.builder()
+                .id(idContaOrigem)
+                .saldo(BigDecimal.valueOf(100))
+                .build();
+
+        when(contaRepository.findById((long) idContaOrigem)).thenReturn(Optional.of(contaOrigem));
+        when(contaRepository.findByNumero(numeroContaDestino)).thenReturn(Optional.of(new Conta()));
+
+        TransferenciaDTO transferenciaDTO = new TransferenciaDTO(idContaOrigem, numeroContaDestino, valor);
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.transferir(transferenciaDTO);
+        });
+
+        assertEquals("Saldo insuficiente para transferência", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testTransferir_ContaDestinoNaoEncontrada() {
+        int idContaOrigem = 1;
+        String numeroContaDestino = "00000002";
+        BigDecimal valor = BigDecimal.valueOf(100);
+
+        Conta contaOrigem = Conta.builder()
+                .id(idContaOrigem)
+                .saldo(BigDecimal.valueOf(200))
+                .build();
+
+        when(contaRepository.findById((long) idContaOrigem)).thenReturn(Optional.of(contaOrigem));
+        when(contaRepository.findByNumero(numeroContaDestino)).thenReturn(Optional.empty());
+
+        TransferenciaDTO transferenciaDTO = new TransferenciaDTO(idContaOrigem, numeroContaDestino, valor);
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            contaService.transferir(transferenciaDTO);
+        });
+
+        assertEquals("Conta de numero 00000002 não foi encontrada.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
     public void testRealizarRecarga_Success() {
         RecargaDTO recargaDTO = new RecargaDTO(
                 "1234567890",
@@ -337,6 +592,30 @@ public class ContaServiceTest {
 
         assertNotNull(result);
         assertEquals(BigDecimal.valueOf(950), result.getSaldo());
+    }
+
+    @Test
+    public void testRealizarRecarga_SaldoInsuficiente() {
+        int idConta = 1;
+        String numeroCelular = "123456789";
+        BigDecimal valor = BigDecimal.valueOf(500);
+
+        Conta conta = Conta.builder()
+                .id(idConta)
+                .saldo(BigDecimal.valueOf(100))
+                .build();
+
+        when(contaRepository.findById((long) idConta)).thenReturn(Optional.of(conta));
+
+        RecargaDTO recargaDTO = new RecargaDTO(numeroCelular, valor);
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.realizarRecarga(idConta, recargaDTO);
+        });
+
+        assertEquals("Saldo insuficiente para recarga", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
 
     @Test
@@ -364,6 +643,22 @@ public class ContaServiceTest {
     }
 
     @Test
+    public void testRealizarDeposito_ValorNegativo() {
+        long idConta = 1L;
+        BigDecimal valorNegativo = BigDecimal.valueOf(-100);
+
+        ValorDTO valorDTO = new ValorDTO(valorNegativo);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            contaService.realizarDeposito(idConta, valorDTO);
+        });
+
+        assertEquals("O valor não pode ser negativo.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
     public void testRealizarSaque_Success() {
         ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(50));
 
@@ -388,27 +683,113 @@ public class ContaServiceTest {
     }
 
     @Test
-    public void testRealizarSaque_SaldoInsuficiente() {
-        ValorDTO valorDTO = new ValorDTO(BigDecimal.valueOf(200));
+    public void testRealizarSaque_ValorNegativo() {
+        long idConta = 1L;
+        BigDecimal valorNegativo = BigDecimal.valueOf(-100);
 
-        Conta conta = Conta.builder()
-                .id(1)
-                .numero("00000001")
-                .saldo(BigDecimal.valueOf(100))
-                .saldoSeparado(BigDecimal.ZERO)
-                .tipoConta(TipoConta.CORRENTE)
-                .agencia(agencia)
-                .cliente(cliente)
-                .build();
+        ValorDTO valorDTO = new ValorDTO(valorNegativo);
 
-        when(contaRepository.findById(anyLong())).thenReturn(Optional.of(conta));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            contaService.realizarSaque(idConta, valorDTO);
+        });
 
-        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> contaService.realizarSaque(1, valorDTO));
-        assertEquals("Saldo insuficiente para saque", exception.getMessage());
+        assertEquals("O valor não pode ser negativo.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
 
     @Test
-    public void testRelatorioTransacoes_Success() {
+    public void testRealizarSaque_SaldoInsuficiente() {
+        int idConta = 1;
+        BigDecimal valorSaque = BigDecimal.valueOf(100);
+
+        Conta conta = Conta.builder()
+                .id(idConta)
+                .saldo(BigDecimal.valueOf(50))
+                .build();
+
+        ValorDTO valorDTO = new ValorDTO(valorSaque);
+
+        when(contaRepository.findById((long) idConta)).thenReturn(Optional.of(conta));
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.realizarSaque(idConta, valorDTO);
+        });
+
+        assertEquals("Saldo insuficiente para saque", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testRealizarPagamento_Sucesso() {
+        int idConta = 1;
+        BigDecimal valorPagamento = BigDecimal.valueOf(100);
+
+        Conta conta = Conta.builder()
+                .id(idConta)
+                .saldo(BigDecimal.valueOf(200))
+                .build();
+
+        Conta contaAtualizada = Conta.builder()
+                .id(idConta)
+                .saldo(BigDecimal.valueOf(100))
+                .build();
+
+        when(contaRepository.findById((long) idConta)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenReturn(contaAtualizada);
+
+        ValorDTO valorDTO = new ValorDTO(valorPagamento);
+
+        Conta result = contaService.realizarPagamento(idConta, valorDTO);
+
+        assertNotNull(result);
+        assertEquals(BigDecimal.valueOf(100), result.getSaldo());
+        verify(contaRepository, times(1)).save(any(Conta.class));
+        verify(transacaoService, times(1)).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testRealizarPagamento_ValorNegativo() {
+        long idConta = 1L;
+        BigDecimal valorNegativo = BigDecimal.valueOf(-100);
+
+        ValorDTO valorDTO = new ValorDTO(valorNegativo);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            contaService.realizarPagamento(idConta, valorDTO);
+        });
+
+        assertEquals("O valor não pode ser negativo.", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testRealizarPagamento_SaldoInsuficiente() {
+        int idConta = 1;
+        BigDecimal valorPagamento = BigDecimal.valueOf(100);
+
+        Conta conta = Conta.builder()
+                .id(idConta)
+                .saldo(BigDecimal.valueOf(50))
+                .build();
+
+        ValorDTO valorDTO = new ValorDTO(valorPagamento);
+
+        when(contaRepository.findById((long) idConta)).thenReturn(Optional.of(conta));
+
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> {
+            contaService.realizarPagamento(idConta, valorDTO);
+        });
+
+        assertEquals("Saldo insuficiente para saque", exception.getMessage());
+        verify(contaRepository, never()).save(any(Conta.class));
+        verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
+    }
+
+    @Test
+    public void testGetExtrato_Success() {
 
         List<TransacaoSimpleDTO> transacoes = new ArrayList<>();
 
@@ -456,6 +837,36 @@ public class ContaServiceTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
+    }
+
+    @Test
+    public void testGetExtratoPeriodo_Sucesso() {
+        int idConta = 1;
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now();
+
+        ExtratoPeriodoDTO extratoPeriodoDTO = new ExtratoPeriodoDTO(startDate, endDate);
+
+        Conta conta = Conta.builder().id(idConta).build();
+        List<TransacaoSimpleDTO> transacoes = new ArrayList<>();
+        TransacaoSimpleDTO transacaoSimpleDTO = TransacaoSimpleDTO.builder()
+                .id(1)
+                .dataTransacao(LocalDateTime.now().minusHours(2))
+                .operacao(Operacao.PAGAMENTO)
+                .descricao("Pagamento 1")
+                .valor(BigDecimal.valueOf(100))
+                .build();
+        transacoes.add(transacaoSimpleDTO);
+
+        when(contaRepository.findById((long) idConta)).thenReturn(Optional.of(conta));
+        when(transacaoService.getTransacoesByPeriodo(conta, startDate, endDate)).thenReturn(transacoes);
+
+        List<TransacaoSimpleDTO> result = contaService.getExtratoPeriodo(idConta, extratoPeriodoDTO);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(contaRepository, times(1)).findById((long) idConta);
+        verify(transacaoService, times(1)).getTransacoesByPeriodo(conta, startDate, endDate);
     }
 
     @Test

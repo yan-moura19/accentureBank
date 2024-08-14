@@ -1,5 +1,6 @@
 package acc.br.accenturebank.controller;
 
+import acc.br.accenturebank.dto.cliente.ClienteDetailedDTO;
 import acc.br.accenturebank.dto.cliente.ClienteResponseDTO;
 import acc.br.accenturebank.dto.cliente.CreateClienteDTO;
 import acc.br.accenturebank.dto.cliente.UpdateClienteDTO;
@@ -46,7 +47,7 @@ public class ClienteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ClienteResponseDTO> getAllClientes() {
+    public List<ClienteDetailedDTO> getAllClientes() {
         return clienteService.getAllClientes();
     }
 
