@@ -95,7 +95,8 @@ public class ContaService {
     }
 
     public Conta getContaById(long id) {
-        return contaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Conta com id %d não foi encontrada.".formatted(id)));
+        return contaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Conta com id %d não foi encontrada.".formatted(id)));
     }
 
     public List<ContaResponseDTO> getAllContas() {
@@ -160,7 +161,7 @@ public class ContaService {
 
     public Conta getContaByNumero(String numero) {
         return contaRepository.findByNumero(numero)
-                .orElseThrow(() -> new EntityNotFoundException("Conta de numero %s não foi encontrada.".formatted(numero)));
+                .orElseThrow(() -> new ResourceNotFoundException("Conta de numero %s não foi encontrada.".formatted(numero)));
     }
 
     @Transactional
@@ -177,7 +178,7 @@ public class ContaService {
         BigDecimal saldoSeparado = conta.getSaldoSeparado();
 
         if (saldo.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para separar o valor.");
+            throw new SaldoInsuficienteException("Saldo insuficiente para separar.");
         }
 
         conta.setSaldo(saldo.subtract(valor));
@@ -211,7 +212,7 @@ public class ContaService {
         BigDecimal saldoSeparado = conta.getSaldoSeparado();
 
         if (saldoSeparado.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("SaldoSeparado insuficiente para separar o valor.");
+            throw new SaldoInsuficienteException("SaldoSeparado insuficiente para resgatar.");
         }
 
         conta.setSaldoSeparado(saldoSeparado.subtract(valor));
@@ -373,7 +374,7 @@ public class ContaService {
         BigDecimal saldo = conta.getSaldo();
 
         if (saldo.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+            throw new SaldoInsuficienteException("Saldo insuficiente para efetuar o pagamento.");
         }
 
         conta.setSaldo(saldo.subtract(valor));

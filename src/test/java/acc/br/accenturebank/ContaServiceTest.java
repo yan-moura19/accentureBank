@@ -350,7 +350,7 @@ public class ContaServiceTest {
 
         when(contaRepository.findByNumero(numeroConta)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             contaService.getContaByNumero(numeroConta);
         });
 
@@ -413,7 +413,7 @@ public class ContaServiceTest {
             contaService.separarValor(id, valorDTO);
         });
 
-        assertEquals("Saldo insuficiente para separar o valor.", exception.getMessage());
+        assertEquals("Saldo insuficiente para separar.", exception.getMessage());
         verify(contaRepository, never()).save(any(Conta.class));
         verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
@@ -472,7 +472,7 @@ public class ContaServiceTest {
             contaService.resgatarSaldoSeparado(id, valorDTO);
         });
 
-        assertEquals("SaldoSeparado insuficiente para separar o valor.", exception.getMessage());
+        assertEquals("SaldoSeparado insuficiente para resgatar.", exception.getMessage());
         verify(contaRepository, never()).save(any(Conta.class));
         verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
@@ -559,7 +559,7 @@ public class ContaServiceTest {
 
         TransferenciaDTO transferenciaDTO = new TransferenciaDTO(idContaOrigem, numeroContaDestino, valor);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             contaService.transferir(transferenciaDTO);
         });
 
@@ -783,7 +783,7 @@ public class ContaServiceTest {
             contaService.realizarPagamento(idConta, valorDTO);
         });
 
-        assertEquals("Saldo insuficiente para saque", exception.getMessage());
+        assertEquals("Saldo insuficiente para efetuar o pagamento.", exception.getMessage());
         verify(contaRepository, never()).save(any(Conta.class));
         verify(transacaoService, never()).createTransacao(any(CreateTransacaoDTO.class));
     }
