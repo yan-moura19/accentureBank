@@ -158,7 +158,7 @@ public class ContaService {
 
     }
 
-    private Conta getContaByNumero(String numero) {
+    public Conta getContaByNumero(String numero) {
         return contaRepository.findByNumero(numero)
                 .orElseThrow(() -> new EntityNotFoundException("Conta de numero %s não foi encontrada.".formatted(numero)));
     }
@@ -403,11 +403,11 @@ public class ContaService {
         LocalDate endDate = extratoPeriodoDTO.getEndDate();
 
         LocalDate now = LocalDate.now();
-        if (!startDate.isBefore(now) || !startDate.isEqual(now)){
+        if (startDate.isAfter(now)){
             throw new PeriodoInvalidoException("startDate deve ser antes ou igual a data de hoje");
         }
 
-        if (!endDate.isBefore(now) || !endDate.isEqual(now)){
+        if (endDate.isAfter(now)){
             throw new PeriodoInvalidoException("endDate deve ser antes ou igual a data de hoje");
         }
 
@@ -421,7 +421,6 @@ public class ContaService {
 
 
     }
-
 
     public Conta ativarPix(long id){
 
@@ -440,7 +439,6 @@ public class ContaService {
 
         return contaRepository.save(conta);
     }
-
 
     public Conta ativarConta(long id){
 
