@@ -1,5 +1,6 @@
 package acc.br.accenturebank;
 
+import acc.br.accenturebank.dto.cliente.ClienteDetailedDTO;
 import acc.br.accenturebank.dto.cliente.ClienteResponseDTO;
 import acc.br.accenturebank.dto.cliente.CreateClienteDTO;
 import acc.br.accenturebank.dto.cliente.UpdateClienteDTO;
@@ -160,7 +161,7 @@ class ClienteServiceTest {
         List<Cliente> clientes = List.of(cliente);
         when(clienteRepository.findAll()).thenReturn(clientes);
 
-        List<ClienteResponseDTO> result = clienteService.getAllClientes();
+        List<ClienteDetailedDTO> result = clienteService.getAllClientes();
 
         assertEquals(1, result.size());
         assertEquals(cliente.getNome(), result.get(0).getNome());
