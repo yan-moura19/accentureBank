@@ -15,11 +15,10 @@ import java.time.LocalDate;
 public class UpdateClienteDTO {
 
 
-    @ValidCPF
-    private String cpf;
 
 
-    private String nome;
+
+
 
 
     @Email(message = "O email deve ser um email válido.")
@@ -31,16 +30,7 @@ public class UpdateClienteDTO {
 
     private String complemento;
 
-    @Past(message = "A data de nascimento deve estar no passado.")
-    @ValidBirthDate
-    private LocalDate dataNascimento;
 
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "A senha teve contém pelo menos 8 caracteres, sendo pelo menos:" +
-                    "1 letra maiúscula" +
-                    "1 número" +
-                    "1 caractere especial: @, & , $ , % , * , ! , ?")
-    private String senha;
 
     @Pattern(regexp = "^(\\+\\d{2})?\\(\\d{2}\\)\\d{4,5}-\\d{4}$",
             message = "O telefone deve ser no formato +55(83)3341-2007 ou (83)98834-2007")

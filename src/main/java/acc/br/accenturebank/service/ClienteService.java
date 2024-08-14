@@ -66,31 +66,30 @@ public class ClienteService {
 
         Cliente cliente = this.getClienteById(id);
 
-        String novoCpf = updateClienteDTO.getCpf();
-        String novoNome = updateClienteDTO.getNome();
+
         String novoEmail = updateClienteDTO.getEmail();
-        String novaSenha = updateClienteDTO.getSenha();
         String novoTelefone = updateClienteDTO.getTelefone();
+        String novoCep = updateClienteDTO.getCep();
+        String novoNumeroEndereco = updateClienteDTO.getNumeroEndereco();
+        String novoComplemento = updateClienteDTO.getComplemento();
 
-        if (novoCpf != null) {
-            cliente.setCpf(novoCpf);
-        }
-
-        if (novoNome != null) {
-            cliente.setNome(novoNome);
-        }
-
-        if (novoEmail != null) {
+        if (novoEmail != null && !novoEmail.isEmpty()) {
             cliente.setEmail(novoEmail);
         }
-
-        if (novaSenha != null) {
-            cliente.setSenha(novaSenha);
-        }
-
-        if (novoTelefone != null) {
+        if (novoTelefone != null && !novoTelefone.isEmpty()) {
             cliente.setTelefone(novoTelefone);
         }
+        if (novoCep != null && !novoCep.isEmpty()) {
+            cliente.setCep(novoCep);
+        }
+        if (novoNumeroEndereco != null && !novoNumeroEndereco.isEmpty()) {
+            cliente.setNumeroEndereco(novoNumeroEndereco);
+        }
+        if (novoComplemento != null && !novoComplemento.isEmpty()) {
+            cliente.setComplemento(novoComplemento);
+        }
+
+
 
         return clienteRepository.save(cliente);
 

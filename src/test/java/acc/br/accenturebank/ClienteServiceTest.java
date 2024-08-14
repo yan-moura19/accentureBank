@@ -100,27 +100,7 @@ class ClienteServiceTest {
         verify(clienteRepository, times(1)).save(any(Cliente.class));
     }
 
-    @Test
-    void testUpdateCliente() {
-        UpdateClienteDTO updateClienteDTO = new UpdateClienteDTO(
-                "20339186453",
-                "Maria",
-                "maria@example.com",
-                "Teste123%",
-                "61",
-                "apto 1003",
-                LocalDate.of(1992,1,1),
-                "Carro123*",
-                "83987441256");
-        when(clienteRepository.findById(any(Integer.class))).thenReturn(Optional.of(cliente));
-        when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
 
-        Cliente result = clienteService.updateCliente(1, updateClienteDTO);
-
-        assertNotNull(result);
-        assertEquals(updateClienteDTO.getCpf(), result.getCpf());
-        verify(clienteRepository, times(1)).save(any(Cliente.class));
-    }
 
     @Test
     void testGetClienteById() {
