@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // Cria uma string com todos os erros concatenados
+
         String errors = ex.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     String fieldName = ((FieldError) error).getField();
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
                 })
                 .collect(Collectors.joining(", "));
 
-        // Cria o mapa com a mensagem concatenada
+
         Map<String, String> response = new HashMap<>();
         response.put("mensagem", errors);
 
@@ -75,6 +75,32 @@ public class GlobalExceptionHandler {
         return errorResponse;
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("mensagem", ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(SaldoInsuficienteException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handleSaldoInsuficienteException(SaldoInsuficienteException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("mensagem", ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(TipoPixIcompativelException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handleTipoPixIcompativelException(TipoPixIcompativelException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("mensagem", ex.getMessage());
+        return errorResponse;
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
