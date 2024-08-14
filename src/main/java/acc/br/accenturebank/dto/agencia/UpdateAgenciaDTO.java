@@ -2,11 +2,13 @@ package acc.br.accenturebank.dto.agencia;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 //DTO de Criação de Transação
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateAgenciaDTO {

@@ -411,8 +411,8 @@ public class ContaService {
             throw new PeriodoInvalidoException("endDate deve ser antes ou igual a data de hoje");
         }
 
-        if(!startDate.isBefore(endDate)){
-            throw new PeriodoInvalidoException("startDate deve ser antes de endDate");
+        if(startDate.isAfter(endDate)){
+            throw new PeriodoInvalidoException("startDate deve ser antes ou igual ao endDate");
         }
 
         Conta conta = this.getContaById(id);
@@ -504,9 +504,6 @@ public class ContaService {
 
 
     }
-
-
-
 
     private String gerarNumeroContaUnico() {
         String numeroConta;
