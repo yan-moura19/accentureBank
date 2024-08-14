@@ -66,6 +66,15 @@ public class GlobalExceptionHandler {
         return errorResponse;
     }
 
+    @ExceptionHandler(PeriodoInvalidoException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handlePeriodoInvalidoException(PeriodoInvalidoException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("mensagem", ex.getMessage());
+        return errorResponse;
+    }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
