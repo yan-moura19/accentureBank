@@ -5,12 +5,18 @@ import acc.br.accenturebank.dto.cliente.ClienteSimpleDTO;
 import acc.br.accenturebank.model.Conta;
 import acc.br.accenturebank.model.Pix;
 import acc.br.accenturebank.model.enums.TipoConta;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ContaResponseDTO {
     private int id;
     private String numero;

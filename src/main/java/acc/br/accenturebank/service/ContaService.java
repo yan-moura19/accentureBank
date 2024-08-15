@@ -43,7 +43,6 @@ public class ContaService {
     @Autowired
     private PixService pixService;
 
-
     public Pix addPixToConta(CreatePixDTO createPixDTO) {
         Long idConta = Long.parseLong(createPixDTO.getIdConta());
         Conta conta = contaRepository.findById(idConta)
@@ -55,7 +54,6 @@ public class ContaService {
 
         return pixService.createPix(newPix);
     }
-
 
     public Conta createConta(CreateContaDTO createContaDTO) {
 
