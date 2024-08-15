@@ -29,7 +29,7 @@ public class ContaController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContaResponseDTO getContaById(@PathVariable Long id) {
+    public ContaResponseDTO getContaById(@PathVariable long id) {
         Conta conta = contaService.getContaById(id);
         return new ContaResponseDTO(conta);
     }

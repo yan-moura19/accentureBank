@@ -2,11 +2,13 @@ package acc.br.accenturebank.dto.conta;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class TransferenciaDTO {
 

@@ -919,4 +919,305 @@ public class ContaServiceTest {
         assertEquals(1, conta3.getId());
         assertEquals(BigDecimal.valueOf(800), conta.getSaldo());
     }
+
+    @Test
+    public void testAddPixToConta() {
+        // Arrange
+        CreatePixDTO createPixDTO = CreatePixDTO.builder()
+                .IdConta("1")
+                .tipo(TipoChavePix.CPF)
+                .chave("09311037460")
+                .build();
+
+        Conta conta = Conta.builder()
+                .id(1)
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .saldoSeparado(BigDecimal.ZERO)
+                .ativa(true)
+                .pixAtivo(false)
+                .tipoConta(TipoConta.CORRENTE)
+                .build();
+
+        Pix pix = Pix.builder()
+                .conta(conta)
+                .tipo(createPixDTO.getTipo())
+                .chave(createPixDTO.getChave())
+                .build();
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(pixService.createPix(any(Pix.class))).thenReturn(pix);
+
+
+        Pix createdPix = contaService.addPixToConta(createPixDTO);
+
+
+        assertEquals(createPixDTO.getChave(), createdPix.getChave());
+        assertEquals(createPixDTO.getTipo(), createdPix.getTipo());
+        assertEquals(conta, createdPix.getConta());
+    }
+
+    @Test
+    public void testAddPixToConta_ContaNotFound() {
+
+        CreatePixDTO createPixDTO = CreatePixDTO.builder()
+                .IdConta("2")
+                .tipo(TipoChavePix.CPF)
+                .chave("20339186453")
+                .build();
+
+        when(contaRepository.findById(2L)).thenReturn(Optional.empty());
+
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            contaService.addPixToConta(createPixDTO);
+        });
+    }
+
+    @Test
+    void testGetAllContas() {
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        Agencia agencia = Agencia.builder()
+                .id(1)
+                .nome("Test Agencia")
+                .endereco("Test Endereco")
+                .telefone("8333412973")
+                .contas(new ArrayList<>())
+                .build();
+
+        Conta conta = Conta.builder()
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .ativa(true)
+                .pixAtivo(false)
+                .tipoConta(TipoConta.CORRENTE)
+                .saldoSeparado(BigDecimal.ZERO)
+                .agencia(agencia)
+                .cliente(cliente)
+                .chavesPix(new ArrayList<>())
+                .build();
+
+        when(contaRepository.findAll()).thenReturn(List.of(conta));
+
+
+        List<ContaResponseDTO> contas = contaService.getAllContas();
+
+
+        assertEquals(1, contas.size());
+        assertEquals(conta.getNumero(), contas.get(0).getNumero());
+    }
+
+    @Test
+    void testAtivarPix() {
+        // Configuração dos mocks
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        Agencia agencia = Agencia.builder()
+                .id(1)
+                .nome("Test Agencia")
+                .endereco("Test Endereco")
+                .telefone("8333412973")
+                .contas(new ArrayList<>())
+                .build();
+
+        Conta conta = Conta.builder()
+                .id(1)
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .ativa(true)
+                .pixAtivo(false)
+                .tipoConta(TipoConta.CORRENTE)
+                .saldoSeparado(BigDecimal.ZERO)
+                .agencia(agencia)
+                .cliente(cliente)
+                .chavesPix(new ArrayList<>())
+                .build();
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Teste
+        Conta resultado = contaService.ativarPix(1L);
+
+        // Verificações
+        assertTrue(resultado.isPixAtivo());
+        verify(contaRepository).save(conta);
+    }
+
+    @Test
+    void testDesativarPix() {
+        // Configuração dos mocks
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        Agencia agencia = Agencia.builder()
+                .id(1)
+                .nome("Test Agencia")
+                .endereco("Test Endereco")
+                .telefone("8333412973")
+                .contas(new ArrayList<>())
+                .build();
+
+        Conta conta = Conta.builder()
+                .id(1)
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .ativa(true)
+                .pixAtivo(true)
+                .tipoConta(TipoConta.CORRENTE)
+                .saldoSeparado(BigDecimal.ZERO)
+                .agencia(agencia)
+                .cliente(cliente)
+                .chavesPix(new ArrayList<>())
+                .build();
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Teste
+        Conta resultado = contaService.desativarPix(1L);
+
+        // Verificações
+        assertFalse(resultado.isPixAtivo());
+        verify(contaRepository).save(conta);
+    }
+
+    @Test
+    void testAtivarConta() {
+        // Configuração dos mocks
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        Agencia agencia = Agencia.builder()
+                .id(1)
+                .nome("Test Agencia")
+                .endereco("Test Endereco")
+                .telefone("8333412973")
+                .contas(new ArrayList<>())
+                .build();
+
+        Conta conta = Conta.builder()
+                .id(1)
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .ativa(false)
+                .pixAtivo(false)
+                .tipoConta(TipoConta.CORRENTE)
+                .saldoSeparado(BigDecimal.ZERO)
+                .agencia(agencia)
+                .cliente(cliente)
+                .chavesPix(new ArrayList<>())
+                .build();
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Teste
+        Conta resultado = contaService.ativarConta(1L);
+
+        // Verificações
+        assertTrue(resultado.isAtiva());
+        verify(contaRepository).save(conta);
+    }
+
+    @Test
+    void testDesativarConta() {
+        // Configuração dos mocks
+        Cliente cliente = Cliente.builder()
+                .id(1)
+                .cpf("12345678901")
+                .nome("Test Cliente")
+                .email("test@example.com")
+                .senha("password")
+                .telefone("123456789")
+                .cep("12345678")
+                .numeroEndereco("123")
+                .complemento("Apto 1")
+                .dataNascimento(LocalDate.of(1990, 1, 1))
+                .contas(new ArrayList<>())
+                .build();
+
+        Agencia agencia = Agencia.builder()
+                .id(1)
+                .nome("Test Agencia")
+                .endereco("Test Endereco")
+                .telefone("8333412973")
+                .contas(new ArrayList<>())
+                .build();
+
+        Conta conta = Conta.builder()
+                .id(1)
+                .numero("00000001")
+                .saldo(BigDecimal.ZERO)
+                .ativa(true)
+                .pixAtivo(false)
+                .tipoConta(TipoConta.CORRENTE)
+                .saldoSeparado(BigDecimal.ZERO)
+                .agencia(agencia)
+                .cliente(cliente)
+                .chavesPix(new ArrayList<>())
+                .build();
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Teste
+        Conta resultado = contaService.desativarConta(1L);
+
+        // Verificações
+        assertFalse(resultado.isAtiva());
+        verify(contaRepository).save(conta);
+    }
+
+
+
+
+
 }
