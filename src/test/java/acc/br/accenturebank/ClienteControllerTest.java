@@ -141,14 +141,10 @@ public class ClienteControllerTest {
     public void testUpdateCliente() throws Exception {
         int id = 1;
         UpdateClienteDTO updateClienteDTO = UpdateClienteDTO.builder()
-                .cpf("09311037460")
-                .nome("victor")
                 .email("victor@gmail.com")
                 .cep("58402025")
                 .numeroEndereco("60")
                 .complemento("ap 1004")
-                .dataNascimento(LocalDate.of(2002, 1, 1))
-                .senha("Teste123?")
                 .telefone("(46)4625-8291")
                 .build();
         Cliente cliente = Cliente.builder()

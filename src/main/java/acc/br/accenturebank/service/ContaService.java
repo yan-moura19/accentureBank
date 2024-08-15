@@ -178,7 +178,7 @@ public class ContaService {
         BigDecimal saldoSeparado = conta.getSaldoSeparado();
 
         if (saldo.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para separar o valor.");
+            throw new SaldoInsuficienteException("Saldo insuficiente para separar.");
         }
 
         conta.setSaldo(saldo.subtract(valor));
@@ -212,7 +212,7 @@ public class ContaService {
         BigDecimal saldoSeparado = conta.getSaldoSeparado();
 
         if (saldoSeparado.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("SaldoSeparado insuficiente para separar o valor.");
+            throw new SaldoInsuficienteException("SaldoSeparado insuficiente para resgatar.");
         }
 
         conta.setSaldoSeparado(saldoSeparado.subtract(valor));
@@ -374,7 +374,7 @@ public class ContaService {
         BigDecimal saldo = conta.getSaldo();
 
         if (saldo.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+            throw new SaldoInsuficienteException("Saldo insuficiente para efetuar o pagamento.");
         }
 
         conta.setSaldo(saldo.subtract(valor));
